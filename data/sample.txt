@@ -1,0 +1,5 @@
+QUY ĐỊNH THƯ VIỆN TRƯỜNG ĐẠI HỌC (DỮ LIỆU GIẢ LẬP CHO DEMO)
+Sinh viên được mượn tối đa 5 quyển sách trong một lần mượn. Thời hạn mượn là 14 ngày kể từ ngày nhận sách. Nếu muốn gia hạn, sinh viên phải thực hiện trước ngày đến hạn và chỉ được gia hạn một lần, tối đa 7 ngày, nếu sách không có người đặt trước.
+Thư viện làm việc từ thứ Hai đến thứ Sáu, 08:00 đến 17:00. Thứ Bảy thư viện mở từ 08:00 đến 12:00. Thư viện không mở cửa Chủ nhật.
+Sinh viên cần xuất trình thẻ sinh viên hợp lệ khi mượn sách. Nếu làm mất sách, sinh viên liên hệ quầy hỗ trợ để được hướng dẫn phương án bồi hoàn.
+Lưu ý: văn bản này là dữ liệu nhân tạo, không phải quy định thực tế của một trường đại học.

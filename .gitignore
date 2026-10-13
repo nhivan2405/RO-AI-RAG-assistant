@@ -1,0 +1,25 @@
+# Python caches and environments
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.pytest_cache/
+# Local secrets
+.env
+.env.*
+!.env.example
+*.key
+# Uploaded/private data and vector database
+data/private/
+data/uploads/
+qdrant_storage/
+*.sqlite
+*.db
+# Editor and OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+# Outputs
+*.log
+results/local/

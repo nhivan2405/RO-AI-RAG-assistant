@@ -1,0 +1,32 @@
+[
+  {
+    "question": "Sinh viên được mượn tối đa mấy quyển sách?",
+    "answer_hint": "5 quyển",
+    "source": "sample.txt"
+  },
+  {
+    "question": "Thời hạn mượn sách là bao lâu?",
+    "answer_hint": "14 ngày",
+    "source": "sample.txt"
+  },
+  {
+    "question": "Thứ Bảy thư viện mở đến mấy giờ?",
+    "answer_hint": "12:00",
+    "source": "sample.txt"
+  },
+  {
+    "question": "Sinh viên có được gia hạn sách bao nhiêu lần?",
+    "answer_hint": "một lần",
+    "source": "sample.txt"
+  },
+  {
+    "question": "Thư viện có mở Chủ nhật không?",
+    "answer_hint": "không mở",
+    "source": "sample.txt"
+  },
+  {
+    "question": "Học phí học kỳ này là bao nhiêu?",
+    "answer_hint": null,
+    "source": null
+  }
+]
