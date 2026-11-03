@@ -1,5 +1,77 @@
-QUY ĐỊNH THƯ VIỆN TRƯỜNG ĐẠI HỌC (DỮ LIỆU GIẢ LẬP CHO DEMO)
-Sinh viên được mượn tối đa 5 quyển sách trong một lần mượn. Thời hạn mượn là 14 ngày kể từ ngày nhận sách. Nếu muốn gia hạn, sinh viên phải thực hiện trước ngày đến hạn và chỉ được gia hạn một lần, tối đa 7 ngày, nếu sách không có người đặt trước.
-Thư viện làm việc từ thứ Hai đến thứ Sáu, 08:00 đến 17:00. Thứ Bảy thư viện mở từ 08:00 đến 12:00. Thư viện không mở cửa Chủ nhật.
-Sinh viên cần xuất trình thẻ sinh viên hợp lệ khi mượn sách. Nếu làm mất sách, sinh viên liên hệ quầy hỗ trợ để được hướng dẫn phương án bồi hoàn.
-Lưu ý: văn bản này là dữ liệu nhân tạo, không phải quy định thực tế của một trường đại học.
+QUY ĐỊNH THƯ VIỆN TRƯỜNG ĐẠI HỌC
+DỮ LIỆU GIẢ LẬP CHO DEMO RAG
+
+Lưu ý quan trọng: Toàn bộ nội dung trong tài liệu này là dữ liệu nhân tạo phục vụ kiểm thử hệ thống hỏi đáp tài liệu. Đây không phải quy định thực tế của bất kỳ trường đại học, thư viện hoặc cơ quan nào. Không sử dụng tài liệu này để đưa ra quyết định học vụ, tài chính hoặc pháp lý.
+
+1. PHẠM VI VÀ ĐỐI TƯỢNG PHỤC VỤ
+
+Thư viện phục vụ sinh viên, học viên, giảng viên và nhân viên có thẻ hợp lệ do trường giả lập cấp. Người dùng phải tự chịu trách nhiệm bảo quản thẻ thư viện và không cho người khác mượn thẻ để thực hiện giao dịch. Mỗi giao dịch mượn, trả, gia hạn hoặc đặt trước đều được ghi nhận theo mã bạn đọc.
+
+Bạn đọc cần giữ trật tự trong khu vực đọc, tuân thủ hướng dẫn của nhân viên thư viện và bảo quản tài liệu, thiết bị dùng chung. Thư viện có thể từ chối phục vụ tạm thời khi tài khoản có tài liệu quá hạn, tài liệu bị báo mất hoặc có khoản bồi hoàn chưa xử lý.
+
+2. THỜI GIAN PHỤC VỤ
+
+Thư viện làm việc từ thứ Hai đến thứ Sáu, từ 08:00 đến 17:00. Thứ Bảy, thư viện mở từ 08:00 đến 12:00. Thư viện không mở cửa vào Chủ nhật.
+
+Trong ngày nghỉ lễ, thời gian phục vụ có thể thay đổi. Thông báo điều chỉnh giờ mở cửa được niêm yết tại quầy hỗ trợ và trên kênh thông báo nội bộ giả lập. Bạn đọc nên kiểm tra thông báo trước khi đến thư viện, đặc biệt trong tuần thi hoặc kỳ nghỉ dài.
+
+3. ĐIỀU KIỆN MƯỢN TÀI LIỆU
+
+Sinh viên cần xuất trình thẻ sinh viên hợp lệ khi mượn sách. Thẻ phải còn hiệu lực, không bị khóa và thông tin nhận dạng trên thẻ phải khớp với tài khoản bạn đọc. Nhân viên thư viện có thể yêu cầu xác nhận bổ sung khi thẻ bị hỏng hoặc thông tin không rõ ràng.
+
+Sinh viên được mượn tối đa 5 quyển sách trong một lần mượn. Giới hạn này bao gồm các tài liệu đang được mượn nhưng chưa trả. Tài liệu tham khảo tại chỗ, báo, tạp chí số mới và một số tài liệu quý hiếm không được mang ra khỏi thư viện.
+
+Khi nhận sách, bạn đọc cần kiểm tra tình trạng vật lý của tài liệu tại quầy. Nếu phát hiện rách, thiếu trang, ghi chú bất thường hoặc hư hỏng, bạn đọc phải báo ngay cho nhân viên. Việc không báo tình trạng hư hỏng trước khi rời quầy có thể khiến tài khoản cần được kiểm tra khi trả sách.
+
+4. THỜI HẠN MƯỢN VÀ GIA HẠN
+
+Thời hạn mượn sách là 14 ngày kể từ ngày nhận sách. Ngày đến hạn được hiển thị trên biên nhận hoặc trong lịch sử giao dịch của tài khoản. Bạn đọc có trách nhiệm theo dõi thời hạn này và trả tài liệu đúng hạn.
+
+Nếu muốn gia hạn, sinh viên phải thực hiện trước ngày đến hạn. Mỗi tài liệu chỉ được gia hạn một lần, tối đa 7 ngày, nếu sách không có người đặt trước. Việc gia hạn không áp dụng cho tài liệu đã quá hạn, tài liệu thuộc diện chỉ đọc tại chỗ hoặc tài liệu đã được hệ thống đánh dấu có yêu cầu đặt trước.
+
+Bạn đọc có thể yêu cầu gia hạn tại quầy hỗ trợ hoặc qua cổng thư viện giả lập khi chức năng này khả dụng. Sau khi gia hạn thành công, ngày đến hạn mới cần được kiểm tra lại trên biên nhận điện tử. Nếu không nhận được xác nhận, bạn đọc nên liên hệ nhân viên thay vì giả định yêu cầu đã được xử lý.
+
+5. TRẢ SÁCH VÀ TÀI LIỆU QUÁ HẠN
+
+Sách được trả tại quầy trả tài liệu trong giờ làm việc. Bạn đọc cần chờ xác nhận giao dịch hoàn tất trước khi rời đi. Đối với tài liệu được trả gần thời điểm đóng cửa, việc cập nhật trạng thái có thể được hoàn tất vào phiên làm việc tiếp theo.
+
+Khi một tài liệu quá hạn, tài khoản có thể bị hạn chế mượn thêm tài liệu cho đến khi tài liệu được trả và tình trạng giao dịch được xử lý. Dữ liệu demo này không quy định mức phạt cụ thể. Mọi câu hỏi về phí phạt hoặc học phí phải được trả lời là không có đủ thông tin trong tài liệu được cung cấp.
+
+6. ĐẶT TRƯỚC TÀI LIỆU
+
+Bạn đọc có thể đặt trước một tài liệu đang được người khác mượn nếu tài liệu đó cho phép đặt trước. Khi tài liệu được trả, hệ thống giả lập gửi thông báo đến tài khoản đã đăng ký. Tài liệu được giữ tại quầy trong 3 ngày làm việc kể từ thời điểm thông báo.
+
+Nếu bạn đọc không đến nhận trong thời gian giữ chỗ, yêu cầu đặt trước có thể bị hủy để tài liệu được chuyển cho người chờ tiếp theo hoặc trả về kệ. Thứ tự ưu tiên được xác định theo thời điểm yêu cầu được ghi nhận, không phải theo thời điểm người dùng đến quầy hỏi thông tin.
+
+7. SỬ DỤNG KHÔNG GIAN VÀ THIẾT BỊ
+
+Khu vực học nhóm được sử dụng cho các nhóm từ 3 đến 8 người. Bạn đọc đăng ký tại quầy trước khi sử dụng và mỗi lượt đăng ký tối đa 2 giờ. Việc gia hạn thời gian sử dụng chỉ được xem xét khi không có nhóm khác chờ.
+
+Máy tính tra cứu chỉ phục vụ tìm kiếm danh mục tài liệu, truy cập tài nguyên học tập được phép và tra cứu thông tin thư viện. Không cài đặt phần mềm trái phép, không thay đổi cấu hình máy và không sử dụng thiết bị công cộng để lưu trữ dữ liệu cá nhân nhạy cảm.
+
+Thức ăn có mùi mạnh không được sử dụng trong khu vực kho sách và phòng đọc yên tĩnh. Nước uống có nắp đậy được phép ở khu vực được chỉ định. Bạn đọc cần để điện thoại ở chế độ im lặng để không ảnh hưởng đến người khác.
+
+8. MẤT, HỎNG VÀ BỒI HOÀN
+
+Nếu làm mất sách, sinh viên liên hệ quầy hỗ trợ để được hướng dẫn phương án bồi hoàn. Nhân viên sẽ kiểm tra mã tài liệu, phiên bản, tình trạng sẵn có và lịch sử giao dịch trước khi thông báo bước xử lý tiếp theo.
+
+Không tự ý mua tài liệu thay thế hoặc nộp tiền khi chưa có hướng dẫn từ quầy hỗ trợ. Mức bồi hoàn cụ thể không được cung cấp trong dữ liệu demo này. Hệ thống hỏi đáp phải nêu rõ rằng không tìm thấy đủ thông tin khi được hỏi về số tiền bồi hoàn.
+
+9. BẢO MẬT TÀI KHOẢN VÀ HỖ TRỢ
+
+Bạn đọc không chia sẻ mật khẩu hoặc mã xác thực tài khoản thư viện cho người khác. Khi nghi ngờ tài khoản bị sử dụng trái phép, cần đổi mật khẩu và báo ngay cho quầy hỗ trợ. Nhân viên không yêu cầu bạn đọc cung cấp mật khẩu qua email hoặc tin nhắn.
+
+Khi cần trợ giúp, bạn đọc có thể đến quầy hỗ trợ trong giờ mở cửa. Để xử lý nhanh, nên cung cấp mã bạn đọc, tên tài liệu và mô tả ngắn gọn về vấn đề. Không cung cấp nội dung tài liệu cá nhân hoặc thông tin nhạy cảm không cần thiết trong yêu cầu hỗ trợ.
+
+10. TÓM TẮT THÔNG TIN TRA CỨU NHANH
+
+- Số sách tối đa trong một lần mượn: 5 quyển.
+- Thời hạn mượn: 14 ngày kể từ ngày nhận sách.
+- Gia hạn: một lần, tối đa 7 ngày, chỉ khi không có người đặt trước.
+- Giờ mở cửa thứ Hai đến thứ Sáu: 08:00 đến 17:00.
+- Giờ mở cửa thứ Bảy: 08:00 đến 12:00.
+- Chủ nhật: thư viện không mở cửa.
+- Thời gian giữ tài liệu đã đặt trước: 3 ngày làm việc.
+- Thời lượng sử dụng phòng học nhóm mỗi lượt: tối đa 2 giờ.
+
+Tài liệu này được xây dựng để tạo nhiều đoạn văn có chủ đề khác nhau, phục vụ kiểm tra quá trình nạp dữ liệu, chia đoạn, embedding, truy xuất Top-K và phản hồi có căn cứ. Các quy định trong tài liệu chỉ mang tính minh họa và có thể được thay đổi cho mục đích kiểm thử.

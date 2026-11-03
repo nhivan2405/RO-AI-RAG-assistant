@@ -1,0 +1,11 @@
+chunking:
+  strategy: recursive
+  chunk_size: 700
+  chunk_overlap: 100
+
+retrieval:
+  top_k: 5
+
+models:
+  embedding: sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2
+  gemini: gemini-2.5-flash

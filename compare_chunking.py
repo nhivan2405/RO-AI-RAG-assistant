@@ -1,13 +1,88 @@
-"""Character-based chunk sweep; diagnostics only, not proof of retrieval accuracy."""
+"""So sánh fixed-size và recursive chunking theo số ký tự."""
+from __future__ import annotations
+
 import csv
-from src.pipeline import load_documents,make_chunks
-rows=[]; docs=load_documents("data")
-for size in (300,700,1100):
-    for overlap in (0,100):
-        if overlap>=size:continue
-        chunks=make_chunks(docs,size,overlap)
-        lens=[len(c.text) for c in chunks]
-        rows.append({"chunk_size_chars":size,"overlap_chars":overlap,"num_chunks":len(chunks),"avg_chunk_length_chars":round(sum(lens)/len(lens),1) if lens else 0,"max_chunk_length_chars":max(lens) if lens else 0})
-with open("results/chunk_diagnostics.csv","w",newline="",encoding="utf-8-sig") as f:
-    writer=csv.DictWriter(f,fieldnames=rows[0]);writer.writeheader();writer.writerows(rows)
-print(*rows,sep="\n")
+from pathlib import Path
+from typing import Any
+
+from src.chunking.chunker import Chunk, chunk_documents
+from src.ingestion.loader import load_documents
+
+
+CHUNK_SIZE = 700
+CHUNK_OVERLAP = 100
+STRATEGIES = ("fixed", "recursive")
+RESULTS_PATH = Path("results/chunk_comparison.csv")
+
+
+def calculate_metrics(chunks: list[Chunk]) -> dict[str, float | int]:
+    """Tính các chỉ số chiều dài chunk theo ký tự."""
+    lengths = [len(chunk.text) for chunk in chunks]
+    if not lengths:
+        return {"total_chunks": 0, "average_length": 0, "maximum_length": 0}
+
+    return {
+        "total_chunks": len(chunks),
+        "average_length": round(sum(lengths) / len(lengths), 1),
+        "maximum_length": max(lengths),
+    }
+
+
+def print_strategy_result(strategy: str, chunks: list[Chunk]) -> None:
+    """In chỉ số và hai chunk đầu với ranh giới văn bản rõ ràng."""
+    metrics = calculate_metrics(chunks)
+    print(f"\nStrategy: {strategy}")
+    print(f"Total chunk count: {metrics['total_chunks']}")
+    print(f"Average chunk length: {metrics['average_length']} characters")
+    print(f"Maximum chunk length: {metrics['maximum_length']} characters")
+
+    for position, chunk in enumerate(chunks[:2], start=1):
+        print(f"--- Chunk {position} start ({chunk.chunk_id}) ---")
+        print(chunk.text)
+        print(f"--- Chunk {position} end ({chunk.chunk_id}) ---")
+
+
+def build_csv_row(strategy: str, chunks: list[Chunk]) -> dict[str, Any]:
+    """Tạo một dòng CSV cho mỗi chiến lược chunking."""
+    metrics = calculate_metrics(chunks)
+    return {
+        "strategy": strategy,
+        "chunk_size_chars": CHUNK_SIZE,
+        "chunk_overlap_chars": CHUNK_OVERLAP,
+        "total_chunks": metrics["total_chunks"],
+        "average_chunk_length_chars": metrics["average_length"],
+        "maximum_chunk_length_chars": metrics["maximum_length"],
+        "first_chunk": chunks[0].text if chunks else "",
+        "second_chunk": chunks[1].text if len(chunks) > 1 else "",
+    }
+
+
+def export_results(rows: list[dict[str, Any]]) -> None:
+    """Tạo thư mục kết quả trước khi ghi tệp CSV."""
+    RESULTS_PATH.parent.mkdir(parents=True, exist_ok=True)
+    with RESULTS_PATH.open("w", newline="", encoding="utf-8-sig") as output_file:
+        writer = csv.DictWriter(output_file, fieldnames=rows[0].keys())
+        writer.writeheader()
+        writer.writerows(rows)
+
+
+def main() -> None:
+    documents = load_documents("data")
+    rows: list[dict[str, Any]] = []
+
+    for strategy in STRATEGIES:
+        chunks = chunk_documents(
+            documents,
+            chunk_size=CHUNK_SIZE,
+            chunk_overlap=CHUNK_OVERLAP,
+            strategy=strategy,
+        )
+        print_strategy_result(strategy, chunks)
+        rows.append(build_csv_row(strategy, chunks))
+
+    export_results(rows)
+    print(f"\nExported comparison to: {RESULTS_PATH}")
+
+
+if __name__ == "__main__":
+    main()

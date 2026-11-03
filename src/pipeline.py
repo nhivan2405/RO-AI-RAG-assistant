@@ -1,57 +1,18 @@
 """Demo RAG: document -> chunk -> embed -> local Qdrant -> search -> Gemini.
 No training/fine-tuning takes place; embeddings are calculated by a pretrained encoder.
 """
-from pathlib import Path
-from dataclasses import dataclass
-from typing import Optional
 import os
 import uuid
 import numpy as np
 from dotenv import load_dotenv
-from docx import Document
-from pypdf import PdfReader
-from langchain_text_splitters import RecursiveCharacterTextSplitter
 from sentence_transformers import SentenceTransformer
 from qdrant_client import QdrantClient, models
 
+from src.chunking.chunker import Chunk, make_chunks
+from src.config import load_config
+from src.ingestion.loader import load_documents
+
 load_dotenv()
-
-@dataclass
-class Chunk:
-    text: str
-    source: str
-    page: int | None
-    chunk_id: str
-
-def load_documents(folder: str = "data") -> list[tuple[str, int | None, str]]:
-    docs=[]
-    for path in sorted(Path(folder).glob("*")):
-        if path.suffix.lower()==".txt":
-            docs.append((path.name,None,path.read_text(encoding="utf-8")))
-        elif path.suffix.lower()==".pdf":
-            for index,page in enumerate(PdfReader(str(path)).pages,1):
-                value=page.extract_text() or ""
-                if value.strip(): docs.append((path.name,index,value))
-        elif path.suffix.lower()==".docx":
-            doc=Document(path)
-            value="\n".join(p.text for p in doc.paragraphs if p.text.strip())
-            if value.strip(): docs.append((path.name,None,value))
-    return docs
-
-def make_chunks(docs, chunk_size=700, chunk_overlap=100):
-    if not 0 <= chunk_overlap < chunk_size:
-        raise ValueError("Require 0 <= chunk_overlap < chunk_size")
-    splitter=RecursiveCharacterTextSplitter(
-        separators=["\n\n","\n",". ","; "," ",""],
-        chunk_size=chunk_size,chunk_overlap=chunk_overlap,
-        length_function=len,  # IMPORTANT: CHARACTER counts, not tokenizer tokens
-    )
-    chunks=[]
-    for source,page,text in docs:
-        for i,part in enumerate(splitter.split_text(text)):
-            if part.strip():
-                chunks.append(Chunk(part,source,page,f"{source}:p{page}:c{i}"))
-    return chunks
 
 def cosine_manual(a,b):
     a=np.asarray(a,dtype=float); b=np.asarray(b,dtype=float)
@@ -61,7 +22,8 @@ def cosine_manual(a,b):
 
 class RagIndex:
     def __init__(self, model_name=None, collection="rag_demo"):
-        self.model_name=model_name or os.getenv("EMBED_MODEL","sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2")
+        config = load_config()
+        self.model_name=model_name or os.getenv("EMBED_MODEL", config["models"]["embedding"])
         self.embedder=SentenceTransformer(self.model_name)
         self.client=QdrantClient(":memory:")  # local prototype; data lost when process exits
         self.collection=collection
@@ -97,5 +59,6 @@ def answer_with_gemini(question,hits):
         raise RuntimeError("Set GEMINI_API_KEY in .env; use --no-llm to test retrieval without an API key")
     from google import genai
     client=genai.Client(api_key=key)
-    resp=client.models.generate_content(model=os.getenv("GEMINI_MODEL","gemini-2.5-flash"),contents=make_prompt(question,hits))
+    model_name = os.getenv("GEMINI_MODEL", load_config()["models"]["gemini"])
+    resp=client.models.generate_content(model=model_name,contents=make_prompt(question,hits))
     return resp.text or "(API returned no text)"

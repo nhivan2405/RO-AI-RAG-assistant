@@ -1,0 +1,7 @@
+﻿chunk_size_chars,overlap_chars,num_chunks,avg_chunk_length_chars,max_chunk_length_chars
+300,0,28,234.1,297
+300,100,28,243.8,297
+700,0,11,598.7,695
+700,100,12,556.2,693
+1100,0,7,942.0,1099
+1100,100,7,959.9,1099

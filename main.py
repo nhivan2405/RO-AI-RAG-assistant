@@ -1,22 +1,43 @@
-import os,argparse
-from dotenv import load_dotenv
-from src.pipeline import load_documents,make_chunks,RagIndex,answer_with_gemini,cosine_manual
+import argparse
+import os
 
-def main():
+from dotenv import load_dotenv
+
+from src.chunking.chunker import chunk_documents
+from src.config import load_config
+from src.pipeline import RagIndex, answer_with_gemini, load_documents
+
+
+def main() -> None:
     load_dotenv()
-    parser=argparse.ArgumentParser()
-    parser.add_argument("--question",default="Sinh viên được mượn bao nhiêu quyển sách?")
-    parser.add_argument("--no-llm",action="store_true",help="retrieval only; no Gemini API")
-    parser.add_argument("--data",default="data")
-    args=parser.parse_args()
-    docs=load_documents(args.data)
-    chunks=make_chunks(docs,int(os.getenv("CHUNK_SIZE","700")),int(os.getenv("CHUNK_OVERLAP","100")))
-    idx=RagIndex()
-    dimension=idx.build(chunks)
-    hits=idx.search(args.question,int(os.getenv("TOP_K","5")))
-    print(f"Model={idx.model_name}; dimension={dimension}; chunk count={len(chunks)}")
-    for i,h in enumerate(hits,1):
-        print(f"[{i}] score={h['score']:.4f} source={h['source']} page={h['page']} | {h['text'][:200]}")
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--question", default="Sinh viên được mượn bao nhiêu quyển sách?")
+    parser.add_argument("--no-llm", action="store_true", help="retrieval only; no Gemini API")
+    parser.add_argument("--data", default="data")
+    args = parser.parse_args()
+    config = load_config()
+    documents = load_documents(args.data)
+    chunk_size = int(os.getenv("CHUNK_SIZE", config["chunking"]["chunk_size"]))
+    chunk_overlap = int(os.getenv("CHUNK_OVERLAP", config["chunking"]["chunk_overlap"]))
+    chunks = chunk_documents(
+        documents,
+        chunk_size,
+        chunk_overlap,
+        strategy=config["chunking"]["strategy"],
+    )
+    index = RagIndex()
+    dimension = index.build(chunks)
+    top_k = int(os.getenv("TOP_K", config["retrieval"]["top_k"]))
+    hits = index.search(args.question, top_k)
+    print(f"Model={index.model_name}; dimension={dimension}; chunk count={len(chunks)}")
+    for position, hit in enumerate(hits, start=1):
+        print(
+            f"[{position}] score={hit['score']:.4f} source={hit['source']} "
+            f"page={hit['page']} | {hit['text'][:200]}"
+        )
     if not args.no_llm:
-        print("\nGEMINI ANSWER:\n",answer_with_gemini(args.question,hits))
-if __name__=="__main__": main()
+        print("\nGEMINI ANSWER:\n", answer_with_gemini(args.question, hits))
+
+
+if __name__ == "__main__":
+    main()
