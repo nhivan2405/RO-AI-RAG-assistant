@@ -9,7 +9,7 @@
 ## Công nghệ dự kiến
 
 - **Python**, Recursive Chunking; Embedding nghiên cứu chính: **BGE-M3**.
-- Demo mặc định chạy **multilingual MiniLM** để nhẹ hơn trên CPU, **Qdrant in-memory**, Dense Top-K.
+- Demo mặc định chạy **multilingual MiniLM** để nhẹ hơn trên CPU, **Qdrant local persistent**, Dense Top-K.
 - **Gemini API** tùy chọn (cần API key và quota).
 - **OCR, upload PNG/JPG, FastAPI, hybrid/reranking**: đang nghiên cứu, **chưa tích hợp trong prototype hiện tại**.
 
@@ -49,9 +49,9 @@ python main.py --no-llm --question "Sinh viên được mượn bao nhiêu quy�
 
 Lần đầu chạy có thể cần Internet để tải pretrained embedding model. Để dùng Gemini, điền khóa vào `.env` và chạy `python main.py --question "..."`. **Không commit `.env`.**
 
-`config.yaml` là nơi cấu hình không nhạy cảm: chiến lược chunk (`recursive` mặc định hoặc `fixed`), kích thước/overlap theo **ký tự**, `top_k`, và tên model mặc định. Các biến tương thích cũ trong `.env` (`CHUNK_SIZE`, `CHUNK_OVERLAP`, `TOP_K`, `EMBED_MODEL`, `GEMINI_MODEL`) vẫn ghi đè giá trị tương ứng để không thay đổi cách chạy CLI hiện có.
+`config.yaml` là nơi cấu hình không nhạy cảm: chiến lược chunk (`recursive` mặc định hoặc `fixed`), kích thước/overlap theo **ký tự**, `top_k`, tên model mặc định, đường dẫn Qdrant local và collection. Các biến tương thích cũ trong `.env` (`CHUNK_SIZE`, `CHUNK_OVERLAP`, `TOP_K`, `EMBED_MODEL`, `GEMINI_MODEL`) vẫn ghi đè giá trị tương ứng để không thay đổi cách chạy CLI hiện có.
 
-**Lưu ý:** Demo mặc định dùng Qdrant in-memory (không lưu sau khi chương trình kết thúc), PDF dạng text; **không xử lý OCR**. `evaluate.py` chỉ là demo đánh giá mẫu, **không được dùng như số đo khoa học thực nghiệm khi chưa có ground truth chuẩn**. Thay embedding model sẽ cần lập collection mới/re-index phù hợp dimension.
+**Lưu ý:** Demo dùng Qdrant local tại `qdrant_storage/` theo mặc định và tái sử dụng collection tương thích. Khi thay embedding model, hãy đặt collection mới trong `config.yaml` rồi re-index; collection có model hoặc dimension khác sẽ bị từ chối để tránh trộn vectors. PDF dạng text; **không xử lý OCR**. `evaluate.py` chỉ là demo đánh giá mẫu, **không được dùng như số đo khoa học thực nghiệm khi chưa có ground truth chuẩn**.
 
 ## Hướng dẫn upload GitHub
 

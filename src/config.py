@@ -19,6 +19,10 @@ DEFAULT_CONFIG: dict[str, dict[str, Any]] = {
         "embedding": "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2",
         "gemini": "gemini-2.5-flash",
     },
+    "vectordb": {
+        "storage_path": "qdrant_storage",
+        "collection_name": "rag_demo",
+    },
 }
 
 
@@ -72,3 +76,8 @@ def _validate_config(config: dict[str, dict[str, Any]]) -> None:
     for section, key in (("models", "embedding"), ("models", "gemini")):
         if not isinstance(config[section][key], str) or not config[section][key].strip():
             raise ValueError(f"{section}.{key} must be a non-empty string")
+
+    for key in ("storage_path", "collection_name"):
+        value = config["vectordb"][key]
+        if not isinstance(value, str) or not value.strip():
+            raise ValueError(f"vectordb.{key} must be a non-empty string")

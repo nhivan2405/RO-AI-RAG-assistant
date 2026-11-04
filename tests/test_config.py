@@ -16,6 +16,8 @@ class ConfigTest(unittest.TestCase):
         self.assertEqual(config["chunking"]["strategy"], "recursive")
         self.assertEqual(config["chunking"]["chunk_size"], 256)
         self.assertEqual(config["retrieval"]["top_k"], 5)
+        self.assertEqual(config["vectordb"]["storage_path"], "qdrant_storage")
+        self.assertEqual(config["vectordb"]["collection_name"], "rag_demo")
 
     def test_rejects_invalid_overlap(self):
         with tempfile.TemporaryDirectory() as directory:

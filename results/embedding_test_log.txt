@@ -1,0 +1,15 @@
+﻿python : test_embed_query_for_supported_models (test_embedder.EmbedderTest.test_embed_query_for_supported_models) ... ok
+At line:1 char:1
++ python -m unittest discover -s tests -p "test_embed*.py" -v 2>&1 |
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (test_embed_quer..._models) ... ok:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+test_embed_texts_for_supported_models (test_embedder.EmbedderTest.test_embed_texts_for_supported_models) ... ok
+test_rejects_model_with_unexpected_dimension (test_embedder.EmbedderTest.test_rejects_model_with_unexpected_dimension) ... ok
+test_rejects_unsupported_model (test_embedder.EmbedderTest.test_rejects_unsupported_model) ... ok
+
+----------------------------------------------------------------------
+Ran 4 tests in 0.007s
+
+OK

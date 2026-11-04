@@ -1,50 +1,56 @@
-"""Demo RAG: document -> chunk -> embed -> local Qdrant -> search -> Gemini.
-No training/fine-tuning takes place; embeddings are calculated by a pretrained encoder.
-"""
+"""Điều phối RAG demo với embedding và Qdrant local persistent."""
 import os
-import uuid
 import numpy as np
 from dotenv import load_dotenv
-from sentence_transformers import SentenceTransformer
-from qdrant_client import QdrantClient, models
 
 from src.chunking.chunker import Chunk, make_chunks
 from src.config import load_config
+from src.embeddings.embedder import Embedder
 from src.ingestion.loader import load_documents
+from src.vectordb.vector_store import PersistentVectorStore
 
 load_dotenv()
 
-def cosine_manual(a,b):
+def cosine_manual(a, b):
     a=np.asarray(a,dtype=float); b=np.asarray(b,dtype=float)
     den=np.linalg.norm(a)*np.linalg.norm(b)
     if den == 0: raise ValueError("Zero vector")
     return float(np.dot(a,b)/den)
 
-class RagIndex:
-    def __init__(self, model_name=None, collection="rag_demo"):
-        config = load_config()
-        self.model_name=model_name or os.getenv("EMBED_MODEL", config["models"]["embedding"])
-        self.embedder=SentenceTransformer(self.model_name)
-        self.client=QdrantClient(":memory:")  # local prototype; data lost when process exits
-        self.collection=collection
-        self.chunks=[]
 
-    def build(self,chunks):
-        if not chunks: raise ValueError("No usable chunks")
-        self.chunks=chunks
-        vecs=self.embedder.encode([c.text for c in chunks],normalize_embeddings=True,show_progress_bar=False)
-        dimension=int(vecs.shape[1])  # 384 for MiniLM, 1024 for BGE-M3
-        self.client.create_collection(self.collection,vectors_config=models.VectorParams(size=dimension,distance=models.Distance.COSINE))
-        records=[]
-        for c,v in zip(chunks,vecs):
-            records.append(models.PointStruct(id=str(uuid.uuid4()),vector=v.tolist(),payload={"text":c.text,"source":c.source,"page":c.page,"chunk_id":c.chunk_id}))
-        self.client.upsert(collection_name=self.collection,points=records)
+class RagIndex:
+    """Tương thích ngược cho index RAG dùng persistent vector store."""
+
+    def __init__(self, model_name=None, collection=None):
+        config = load_config()
+        self.model_name = model_name or os.getenv(
+            "EMBED_MODEL", config["models"]["embedding"]
+        )
+        self.embedder = Embedder(self.model_name)
+        self.collection = collection or config["vectordb"]["collection_name"]
+        self.vector_store = PersistentVectorStore(
+            storage_path=config["vectordb"]["storage_path"],
+            collection_name=self.collection,
+            model_name=self.model_name,
+            vector_dimension=self.embedder.expected_dimension,
+        )
+        self.client = self.vector_store.client
+        self.chunks = []
+
+    def build(self, chunks):
+        if not chunks:
+            raise ValueError("No usable chunks")
+        self.chunks = chunks
+        vectors = self.embedder.embed_texts([chunk.text for chunk in chunks])
+        dimension = self.embedder.dimension
+        if dimension != self.vector_store.vector_dimension:
+            raise ValueError("Embedding dimension does not match vector store dimension")
+        self.vector_store.index_chunks(chunks, vectors)
         return dimension
 
-    def search(self,question,top_k=5):
-        query=self.embedder.encode([question],normalize_embeddings=True,show_progress_bar=False)[0]
-        result=self.client.query_points(collection_name=self.collection,query=query.tolist(),limit=top_k,with_payload=True)
-        return [{"score":float(hit.score), **hit.payload} for hit in result.points]
+    def search(self, question, top_k=5):
+        query = self.embedder.embed_query(question)
+        return self.vector_store.search(query, top_k)
 
 def make_prompt(question,hits):
     context="\n\n".join(f"[{i}] Nguồn: {h['source']}, trang: {h['page'] or 'N/A'}\n{h['text']}" for i,h in enumerate(hits,1))
