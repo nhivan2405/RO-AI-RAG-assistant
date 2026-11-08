@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 from copy import deepcopy
+import logging
 from pathlib import Path
 from typing import Any
 
@@ -14,7 +15,7 @@ DEFAULT_CONFIG: dict[str, dict[str, Any]] = {
         "chunk_size": 700,
         "chunk_overlap": 100,
     },
-    "retrieval": {"top_k": 5},
+    "retrieval": {"top_k": 5, "min_score": 0.5},
     "models": {
         "embedding": "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2",
         "gemini": "gemini-2.5-flash",
@@ -23,6 +24,7 @@ DEFAULT_CONFIG: dict[str, dict[str, Any]] = {
         "storage_path": "qdrant_storage",
         "collection_name": "rag_demo",
     },
+    "logging": {"level": "INFO", "file": "logs/app.log"},
 }
 
 
@@ -73,6 +75,14 @@ def _validate_config(config: dict[str, dict[str, Any]]) -> None:
     if not isinstance(top_k, int) or isinstance(top_k, bool) or top_k <= 0:
         raise ValueError("retrieval.top_k must be a positive integer")
 
+    min_score = config["retrieval"]["min_score"]
+    if (
+        not isinstance(min_score, (int, float))
+        or isinstance(min_score, bool)
+        or not 0 <= min_score <= 1
+    ):
+        raise ValueError("retrieval.min_score must be a number between 0 and 1")
+
     for section, key in (("models", "embedding"), ("models", "gemini")):
         if not isinstance(config[section][key], str) or not config[section][key].strip():
             raise ValueError(f"{section}.{key} must be a non-empty string")
@@ -81,3 +91,11 @@ def _validate_config(config: dict[str, dict[str, Any]]) -> None:
         value = config["vectordb"][key]
         if not isinstance(value, str) or not value.strip():
             raise ValueError(f"vectordb.{key} must be a non-empty string")
+
+    logging_config = config["logging"]
+    level = logging_config["level"]
+    if not isinstance(level, str) or logging.getLevelName(level.upper()) == f"Level {level.upper()}":
+        raise ValueError("logging.level must be a valid logging level")
+    log_file = logging_config["file"]
+    if not isinstance(log_file, str) or not log_file.strip():
+        raise ValueError("logging.file must be a non-empty string")

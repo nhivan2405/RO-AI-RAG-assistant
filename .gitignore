@@ -21,5 +21,6 @@ qdrant_storage/
 .DS_Store
 Thumbs.db
 # Outputs
+logs/
 *.log
 results/local/

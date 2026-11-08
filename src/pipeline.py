@@ -7,9 +7,12 @@ from src.chunking.chunker import Chunk, make_chunks
 from src.config import load_config
 from src.embeddings.embedder import Embedder
 from src.ingestion.loader import load_documents
+from src.retrieval.retriever import FALLBACK_MESSAGE
+from src.utils.helpers import get_logger
 from src.vectordb.vector_store import PersistentVectorStore
 
 load_dotenv()
+logger = get_logger("pipeline")
 
 def cosine_manual(a, b):
     a=np.asarray(a,dtype=float); b=np.asarray(b,dtype=float)
@@ -55,16 +58,27 @@ class RagIndex:
 def make_prompt(question,hits):
     context="\n\n".join(f"[{i}] Nguồn: {h['source']}, trang: {h['page'] or 'N/A'}\n{h['text']}" for i,h in enumerate(hits,1))
     return f"""Bạn là trợ lý hỏi đáp tài liệu. Chỉ dùng CONTEXT dưới đây.
-Nếu không đủ dữ liệu, hãy trả lời: 'Không tìm thấy đủ thông tin trong tài liệu được cung cấp.'
+Nếu không đủ dữ liệu, hãy trả lời: '{FALLBACK_MESSAGE}'
 Không bịa dữ kiện hay nguồn. Ghi nguồn như [1], [2] khi dùng thông tin.
 CONTEXT:\n{context}\n\nCÂU HỎI: {question}\nTRẢ LỜI:"""
 
 def answer_with_gemini(question,hits):
     key=os.getenv("GEMINI_API_KEY")
     if not key or key=="YOUR_API_KEY_HERE":
+        logger.warning("gemini_api_key_missing")
         raise RuntimeError("Set GEMINI_API_KEY in .env; use --no-llm to test retrieval without an API key")
-    from google import genai
-    client=genai.Client(api_key=key)
-    model_name = os.getenv("GEMINI_MODEL", load_config()["models"]["gemini"])
-    resp=client.models.generate_content(model=model_name,contents=make_prompt(question,hits))
+    try:
+        from google import genai
+        from google.genai import errors
+    except ImportError as error:
+        logger.error("gemini_client_unavailable error_type=%s", type(error).__name__)
+        raise RuntimeError("Gemini client is unavailable. Install project dependencies.") from error
+
+    try:
+        client=genai.Client(api_key=key)
+        model_name = os.getenv("GEMINI_MODEL", load_config()["models"]["gemini"])
+        resp=client.models.generate_content(model=model_name,contents=make_prompt(question,hits))
+    except (errors.APIError, OSError, RuntimeError, ValueError) as error:
+        logger.error("gemini_api_request_failed error_type=%s", type(error).__name__)
+        raise RuntimeError("Gemini request failed. Check API availability and quota.") from error
     return resp.text or "(API returned no text)"

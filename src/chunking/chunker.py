@@ -7,8 +7,10 @@ from typing import Callable, Literal, Sequence
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 
 from src.ingestion.loader import DocumentRecord
+from src.utils.helpers import get_logger
 
 ChunkingStrategy = Literal["fixed", "recursive"]
+logger = get_logger("chunking")
 
 
 @dataclass
@@ -43,6 +45,7 @@ def chunk_documents(
     chunks: list[Chunk] = []
     for source, page, text in documents:
         chunks.extend(_chunk_document(source, page, text, split_text))
+    logger.info("chunking_completed strategy=%s chunk_count=%s", strategy, len(chunks))
     return chunks
 
 

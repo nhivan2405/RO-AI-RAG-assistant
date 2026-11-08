@@ -6,11 +6,14 @@ from collections.abc import Sequence
 import numpy as np
 from sentence_transformers import SentenceTransformer
 
+from src.utils.helpers import get_logger
+
 
 MODEL_DIMENSIONS = {
     "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2": 384,
     "BAAI/bge-m3": 1024,
 }
+logger = get_logger("embedding")
 
 
 class Embedder:
@@ -19,7 +22,7 @@ class Embedder:
     def __init__(self, model_name: str, model: SentenceTransformer | None = None) -> None:
         self.model_name = model_name
         self.expected_dimension = _get_expected_dimension(model_name)
-        self._model = model or SentenceTransformer(model_name)
+        self._model = model or self._initialize_model(model_name)
         self.dimension: int | None = None
 
     def embed_texts(self, texts: Sequence[str]) -> list[list[float]]:
@@ -27,11 +30,17 @@ class Embedder:
         if not texts:
             return []
 
-        vectors = self._model.encode(
-            list(texts),
-            normalize_embeddings=True,
-            show_progress_bar=False,
-        )
+        try:
+            vectors = self._model.encode(
+                list(texts),
+                normalize_embeddings=True,
+                show_progress_bar=False,
+            )
+        except (OSError, RuntimeError, ValueError) as error:
+            logger.error("embedding_generation_failed error_type=%s", type(error).__name__)
+            raise RuntimeError(
+                "Unable to generate embeddings. Verify the embedding model and runtime."
+            ) from error
         return self._validate_vectors(vectors, len(texts))
 
     def embed_query(self, text: str) -> list[float]:
@@ -44,6 +53,11 @@ class Embedder:
         if array.ndim != 2 or array.shape[0] != expected_count:
             raise ValueError("Embedding model returned an unexpected vector shape")
         if array.shape[1] != self.expected_dimension:
+            logger.error(
+                "embedding_dimension_mismatch expected=%s actual=%s",
+                self.expected_dimension,
+                array.shape[1],
+            )
             raise ValueError(
                 f"Model '{self.model_name}' returned dimension {array.shape[1]}; "
                 f"expected {self.expected_dimension}"
@@ -53,6 +67,16 @@ class Embedder:
 
         self.dimension = int(array.shape[1])
         return array.tolist()
+
+    @staticmethod
+    def _initialize_model(model_name: str) -> SentenceTransformer:
+        try:
+            return SentenceTransformer(model_name)
+        except (ImportError, OSError, RuntimeError, ValueError) as error:
+            logger.error("embedding_initialization_failed error_type=%s", type(error).__name__)
+            raise RuntimeError(
+                "Unable to initialize embedding model. Verify the model configuration and runtime."
+            ) from error
 
 
 def _get_expected_dimension(model_name: str) -> int:

@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import sqlite3
 import uuid
 from pathlib import Path
 from typing import Any, Sequence
@@ -10,10 +11,12 @@ from typing import Any, Sequence
 from qdrant_client import QdrantClient, models
 
 from src.chunking.chunker import Chunk
+from src.utils.helpers import get_logger
 
 
 MANIFEST_NAME = ".rag_collection_metadata.json"
 POINT_NAMESPACE = uuid.UUID("6a94ac74-c5ea-4aa5-b2e4-c2820fe1191a")
+logger = get_logger("vectordb")
 
 
 class PersistentVectorStore:
@@ -33,9 +36,15 @@ class PersistentVectorStore:
         self.collection_name = collection_name
         self.model_name = model_name
         self.vector_dimension = vector_dimension
-        self.storage_path.mkdir(parents=True, exist_ok=True)
-        self.client = QdrantClient(path=str(self.storage_path))
-        self._ensure_compatible_collection()
+        try:
+            self.storage_path.mkdir(parents=True, exist_ok=True)
+            self.client = QdrantClient(path=str(self.storage_path))
+            self._ensure_compatible_collection()
+        except (OSError, RuntimeError, ValueError, sqlite3.Error) as error:
+            logger.error("qdrant_initialization_failed error_type=%s", type(error).__name__)
+            raise
+
+        logger.info("qdrant_initialized collection=%s", self.collection_name)
 
     def index_chunks(
         self,
@@ -48,26 +57,43 @@ class PersistentVectorStore:
         if not chunks:
             return 0
 
-        point_data = [self._build_point_data(chunk, vector) for chunk, vector in zip(chunks, vectors)]
-        existing_hashes = self._get_existing_hashes([item["id"] for item in point_data])
-        points = [
-            models.PointStruct(id=item["id"], vector=item["vector"], payload=item["payload"])
-            for item in point_data
-            if existing_hashes.get(item["id"]) != item["payload"]["content_hash"]
-        ]
-        if points:
-            self.client.upsert(collection_name=self.collection_name, points=points)
+        try:
+            point_data = [
+                self._build_point_data(chunk, vector)
+                for chunk, vector in zip(chunks, vectors)
+            ]
+            existing_hashes = self._get_existing_hashes(
+                [item["id"] for item in point_data]
+            )
+            points = [
+                models.PointStruct(
+                    id=item["id"], vector=item["vector"], payload=item["payload"]
+                )
+                for item in point_data
+                if existing_hashes.get(item["id"]) != item["payload"]["content_hash"]
+            ]
+            if points:
+                self.client.upsert(collection_name=self.collection_name, points=points)
+        except (OSError, RuntimeError, ValueError, sqlite3.Error) as error:
+            logger.error("qdrant_indexing_failed error_type=%s", type(error).__name__)
+            raise
+
+        logger.info("qdrant_indexing_completed indexed_count=%s", len(points))
         return len(points)
 
     def search(self, vector: Sequence[float], top_k: int) -> list[dict[str, Any]]:
         """Truy vấn collection bằng embedding có dimension tương thích."""
         self._validate_vector(vector)
-        result = self.client.query_points(
-            collection_name=self.collection_name,
-            query=list(vector),
-            limit=top_k,
-            with_payload=True,
-        )
+        try:
+            result = self.client.query_points(
+                collection_name=self.collection_name,
+                query=list(vector),
+                limit=top_k,
+                with_payload=True,
+            )
+        except (OSError, RuntimeError, ValueError, sqlite3.Error) as error:
+            logger.error("qdrant_search_failed error_type=%s", type(error).__name__)
+            raise
         return [{"score": float(hit.score), **dict(hit.payload or {})} for hit in result.points]
 
     def close(self) -> None:

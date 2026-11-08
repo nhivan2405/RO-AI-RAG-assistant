@@ -49,7 +49,7 @@ python main.py --no-llm --question "Sinh viên được mượn bao nhiêu quy�
 
 Lần đầu chạy có thể cần Internet để tải pretrained embedding model. Để dùng Gemini, điền khóa vào `.env` và chạy `python main.py --question "..."`. **Không commit `.env`.**
 
-`config.yaml` là nơi cấu hình không nhạy cảm: chiến lược chunk (`recursive` mặc định hoặc `fixed`), kích thước/overlap theo **ký tự**, `top_k`, tên model mặc định, đường dẫn Qdrant local và collection. Các biến tương thích cũ trong `.env` (`CHUNK_SIZE`, `CHUNK_OVERLAP`, `TOP_K`, `EMBED_MODEL`, `GEMINI_MODEL`) vẫn ghi đè giá trị tương ứng để không thay đổi cách chạy CLI hiện có.
+`config.yaml` là nơi cấu hình không nhạy cảm: chiến lược chunk (`recursive` mặc định hoặc `fixed`), kích thước/overlap theo **ký tự**, `top_k`, tên model mặc định, đường dẫn Qdrant local, collection và logging. Mặc định log được ghi vào `logs/app.log`. Các biến tương thích cũ trong `.env` (`CHUNK_SIZE`, `CHUNK_OVERLAP`, `TOP_K`, `EMBED_MODEL`, `GEMINI_MODEL`) vẫn ghi đè giá trị tương ứng để không thay đổi cách chạy CLI hiện có.
 
 **Lưu ý:** Demo dùng Qdrant local tại `qdrant_storage/` theo mặc định và tái sử dụng collection tương thích. Khi thay embedding model, hãy đặt collection mới trong `config.yaml` rồi re-index; collection có model hoặc dimension khác sẽ bị từ chối để tránh trộn vectors. PDF dạng text; **không xử lý OCR**. `evaluate.py` chỉ là demo đánh giá mẫu, **không được dùng như số đo khoa học thực nghiệm khi chưa có ground truth chuẩn**.
 

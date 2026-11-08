@@ -5,6 +5,7 @@ chunking:
 
 retrieval:
   top_k: 5
+  min_score: 0.5
 
 models:
   embedding: sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2
@@ -13,3 +14,7 @@ models:
 vectordb:
   storage_path: qdrant_storage
   collection_name: rag_demo
+
+logging:
+  level: INFO
+  file: logs/app.log
