@@ -1,13 +1,13 @@
 <div align="center">
-  <img src="assets/fit-hcmute-logo.png" alt="Logo Khoa Công nghệ Thông tin - HCMUTE" width="160">
+  <img src="assets/fie-hcmute-logo.png" alt="Logo Khoa Đào tạo quốc tế - HCMUTE" width="160">
 
   <h1>Rô AI Assistant</h1>
-  <p><strong>Hệ thống hỗ trợ tra cứu và ôn tập tài liệu học tập cho sinh viên FIT HCMUTE</strong></p>
+  <p><strong>Hệ thống hỗ trợ tra cứu và ôn tập tài liệu học tập cho sinh viên FIE HCMUTE</strong></p>
 </div>
 
 ## Vấn đề
 
-Sinh viên FIT thường phải đọc lại nhiều slide, giáo trình, tài liệu môn học và quy định trước kỳ thi. Với các kỳ thi mở tài liệu, việc được phép mang tài liệu không đồng nghĩa với việc có đủ thời gian tìm đúng phần cần dùng. Khi câu hỏi xuất hiện, việc lật nhiều tệp PDF, DOCX hoặc TXT trong thời gian ngắn dễ làm mất nhịp ôn tập và ảnh hưởng đến khả năng tổng hợp kiến thức.
+Sinh viên khoa FIE thường phải đọc lại nhiều slide, giáo trình, tài liệu môn học và quy định trước kỳ thi. Với các kỳ thi mở tài liệu, việc được phép mang tài liệu không đồng nghĩa với việc có đủ thời gian tìm đúng phần cần dùng. Khi câu hỏi xuất hiện, việc lật nhiều tệp PDF, DOCX hoặc TXT trong thời gian ngắn dễ làm mất nhịp ôn tập và ảnh hưởng đến khả năng tổng hợp kiến thức.
 
 **Rô AI Assistant** hỗ trợ tra cứu trên chính bộ tài liệu người học cung cấp. Hệ thống được xây dựng theo hướng Retrieval-Augmented Generation (RAG): tìm các đoạn liên quan trong tài liệu trước, sau đó mới dùng chúng làm ngữ cảnh để tạo câu trả lời. Vì vậy, Rô AI là một hệ thống học tập dựa trên tài liệu, không phải chatbot hoặc chatbox trả lời tự do.
 
