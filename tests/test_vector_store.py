@@ -23,7 +23,16 @@ class PersistentVectorStoreTest(unittest.TestCase):
         self.assertEqual(len(hits), 2)
         self.assertEqual(
             set(hits[0]),
-            {"score", "text", "source", "page", "chunk_id", "content_hash"},
+            {
+                "score",
+                "text",
+                "source",
+                "page",
+                "chunk_id",
+                "section",
+                "split_reason",
+                "content_hash",
+            },
         )
         self.assertEqual(hits[0]["source"], "guide.txt")
 
@@ -50,6 +59,8 @@ class PersistentVectorStoreTest(unittest.TestCase):
                 "restart.txt",
                 4,
                 "restart.txt:p4:c0",
+                section="# Network",
+                split_reason="oversized_table",
             )
             store = self._create_store(directory)
             store.index_chunks([chunk], [vector])
@@ -75,6 +86,8 @@ class PersistentVectorStoreTest(unittest.TestCase):
         self.assertEqual(persisted_point.payload["source"], "restart.txt")
         self.assertEqual(persisted_point.payload["page"], 4)
         self.assertEqual(persisted_point.payload["chunk_id"], "restart.txt:p4:c0")
+        self.assertEqual(persisted_point.payload["section"], "# Network")
+        self.assertEqual(persisted_point.payload["split_reason"], "oversized_table")
         self.assertEqual(hits[0]["chunk_id"], "restart.txt:p4:c0")
         self.assertEqual(hits[0]["source"], "restart.txt")
 

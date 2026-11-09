@@ -24,7 +24,7 @@ def cosine_manual(a, b):
 class RagIndex:
     """Tương thích ngược cho index RAG dùng persistent vector store."""
 
-    def __init__(self, model_name=None, collection=None):
+    def __init__(self, model_name=None, collection=None, storage_path=None):
         config = load_config()
         self.model_name = model_name or os.getenv(
             "EMBED_MODEL", config["models"]["embedding"]
@@ -32,13 +32,17 @@ class RagIndex:
         self.embedder = Embedder(self.model_name)
         self.collection = collection or config["vectordb"]["collection_name"]
         self.vector_store = PersistentVectorStore(
-            storage_path=config["vectordb"]["storage_path"],
+            storage_path=storage_path or config["vectordb"]["storage_path"],
             collection_name=self.collection,
             model_name=self.model_name,
             vector_dimension=self.embedder.expected_dimension,
         )
         self.client = self.vector_store.client
         self.chunks = []
+
+    def close(self):
+        """Đóng Qdrant client sau khi hoàn tất pipeline độc lập."""
+        self.vector_store.close()
 
     def build(self, chunks):
         if not chunks:

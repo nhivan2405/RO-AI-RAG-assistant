@@ -1,0 +1,647 @@
+{
+  "run_id": "chunking-v2-fixed",
+  "models": [
+    {
+      "metrics": {
+        "recall_at_5": 1.0,
+        "precision_at_5": 0.19999999999999998,
+        "mrr": 0.6111111111111112,
+        "ndcg_at_5": 0.7103099178571526,
+        "hit_at_5": 1.0
+      },
+      "by_category": {
+        "regulations": {
+          "query_count": 3,
+          "metrics": {
+            "recall_at_5": 1.0,
+            "precision_at_5": 0.20000000000000004,
+            "mrr": 0.611111111111111,
+            "ndcg_at_5": 0.7103099178571526,
+            "hit_at_5": 1.0
+          }
+        },
+        "numerical_values": {
+          "query_count": 2,
+          "metrics": {
+            "recall_at_5": 1.0,
+            "precision_at_5": 0.2,
+            "mrr": 0.75,
+            "ndcg_at_5": 0.8154648767857288,
+            "hit_at_5": 1.0
+          }
+        },
+        "tables": {
+          "query_count": 0,
+          "metrics": {}
+        },
+        "formulas": {
+          "query_count": 0,
+          "metrics": {}
+        },
+        "multi_step_reasoning": {
+          "query_count": 1,
+          "metrics": {
+            "recall_at_5": 1.0,
+            "precision_at_5": 0.2,
+            "mrr": 0.3333333333333333,
+            "ndcg_at_5": 0.5,
+            "hit_at_5": 1.0
+          }
+        },
+        "out_of_scope": {
+          "query_count": 3,
+          "accepted_count": 0,
+          "rejected_count": 3
+        }
+      },
+      "ground_truth_results": [
+        {
+          "id": "borrow-limit",
+          "category": "numerical_values",
+          "question": "Sinh viên được mượn tối đa bao nhiêu quyển sách trong một lần mượn?",
+          "expected_anchor": "Sinh viên được mượn tối đa 5 quyển sách trong một lần mượn.",
+          "relevant_chunk_ids": [],
+          "relevant_total": 1,
+          "relevant_retrieved_ids": [
+            "sample.txt:pNone:c2"
+          ],
+          "relevant_ranks": [
+            1
+          ],
+          "first_relevant_rank": 1,
+          "top_score": 0.5927275619126651,
+          "retrieved_chunk_ids": [
+            "sample.txt:pNone:c2",
+            "sample.txt:pNone:c1",
+            "sample.txt:pNone:c4",
+            "sample.txt:pNone:c8",
+            "sample.txt:pNone:c3"
+          ],
+          "retrieved_scores": [
+            0.5927275619126651,
+            0.49735573935220523,
+            0.4922208517017265,
+            0.4348585518271139,
+            0.42614593121892663
+          ]
+        },
+        {
+          "id": "loan-period",
+          "category": "regulations",
+          "question": "Thời hạn mượn sách được tính như thế nào?",
+          "expected_anchor": "Thời hạn mượn sách là 14 ngày kể từ ngày nhận sách.",
+          "relevant_chunk_ids": [],
+          "relevant_total": 1,
+          "relevant_retrieved_ids": [
+            "sample.txt:pNone:c3"
+          ],
+          "relevant_ranks": [
+            2
+          ],
+          "first_relevant_rank": 2,
+          "top_score": 0.6503363954173711,
+          "retrieved_chunk_ids": [
+            "sample.txt:pNone:c4",
+            "sample.txt:pNone:c3",
+            "sample.txt:pNone:c1",
+            "sample.txt:pNone:c6",
+            "sample.txt:pNone:c10"
+          ],
+          "retrieved_scores": [
+            0.6503363954173711,
+            0.6414899190596846,
+            0.6237086915831704,
+            0.6236803956319642,
+            0.6094287437852427
+          ]
+        },
+        {
+          "id": "renewal-condition",
+          "category": "regulations",
+          "question": "Một tài liệu được gia hạn bao nhiêu lần và tối đa bao lâu?",
+          "expected_anchor": "Mỗi tài liệu chỉ được gia hạn một lần, tối đa 7 ngày, nếu sách không có người đặt trước.",
+          "relevant_chunk_ids": [],
+          "relevant_total": 1,
+          "relevant_retrieved_ids": [
+            "sample.txt:pNone:c4"
+          ],
+          "relevant_ranks": [
+            1
+          ],
+          "first_relevant_rank": 1,
+          "top_score": 0.6767325368008466,
+          "retrieved_chunk_ids": [
+            "sample.txt:pNone:c4",
+            "sample.txt:pNone:c3",
+            "sample.txt:pNone:c6",
+            "sample.txt:pNone:c10",
+            "sample.txt:pNone:c5"
+          ],
+          "retrieved_scores": [
+            0.6767325368008466,
+            0.5921209625490123,
+            0.5801804385771321,
+            0.5766119828531343,
+            0.5588536641376312
+          ]
+        },
+        {
+          "id": "saturday-hours",
+          "category": "numerical_values",
+          "question": "Thư viện mở cửa thứ Bảy trong khung giờ nào?",
+          "expected_anchor": "Thứ Bảy, thư viện mở từ 08:00 đến 12:00.",
+          "relevant_chunk_ids": [],
+          "relevant_total": 1,
+          "relevant_retrieved_ids": [
+            "sample.txt:pNone:c1"
+          ],
+          "relevant_ranks": [
+            2
+          ],
+          "first_relevant_rank": 2,
+          "top_score": 0.7481954462877184,
+          "retrieved_chunk_ids": [
+            "sample.txt:pNone:c10",
+            "sample.txt:pNone:c1",
+            "sample.txt:pNone:c3",
+            "sample.txt:pNone:c4",
+            "sample.txt:pNone:c6"
+          ],
+          "retrieved_scores": [
+            0.7481954462877184,
+            0.636141449717893,
+            0.46374749287071815,
+            0.46368693857853305,
+            0.3930123589778612
+          ]
+        },
+        {
+          "id": "reservation-hold",
+          "category": "regulations",
+          "question": "Tài liệu đặt trước được giữ trong bao lâu?",
+          "expected_anchor": "Tài liệu được giữ tại quầy trong 3 ngày làm việc kể từ thời điểm thông báo.",
+          "relevant_chunk_ids": [],
+          "relevant_total": 1,
+          "relevant_retrieved_ids": [
+            "sample.txt:pNone:c6"
+          ],
+          "relevant_ranks": [
+            3
+          ],
+          "first_relevant_rank": 3,
+          "top_score": 0.7015013026920336,
+          "retrieved_chunk_ids": [
+            "sample.txt:pNone:c4",
+            "sample.txt:pNone:c3",
+            "sample.txt:pNone:c6",
+            "sample.txt:pNone:c10",
+            "sample.txt:pNone:c5"
+          ],
+          "retrieved_scores": [
+            0.7015013026920336,
+            0.6368382373504653,
+            0.6283651217189073,
+            0.6265295751046033,
+            0.5924328770283986
+          ]
+        },
+        {
+          "id": "study-room-duration",
+          "category": "multi_step_reasoning",
+          "question": "Mỗi lượt sử dụng khu vực học nhóm tối đa bao lâu?",
+          "expected_anchor": "mỗi lượt đăng ký tối đa 2 giờ.",
+          "relevant_chunk_ids": [],
+          "relevant_total": 1,
+          "relevant_retrieved_ids": [
+            "sample.txt:pNone:c7"
+          ],
+          "relevant_ranks": [
+            3
+          ],
+          "first_relevant_rank": 3,
+          "top_score": 0.5906403343528916,
+          "retrieved_chunk_ids": [
+            "sample.txt:pNone:c4",
+            "sample.txt:pNone:c10",
+            "sample.txt:pNone:c7",
+            "sample.txt:pNone:c1",
+            "sample.txt:pNone:c8"
+          ],
+          "retrieved_scores": [
+            0.5906403343528916,
+            0.5456334815888416,
+            0.4550464575352867,
+            0.32471948121347927,
+            0.31604324782046067
+          ]
+        }
+      ],
+      "out_of_scope_results": [
+        {
+          "id": "exam-schedule",
+          "category": "out_of_scope",
+          "question": "Lịch thi cuối kỳ môn Cấu trúc dữ liệu là ngày nào?",
+          "decision": "REJECTED",
+          "top_score": 0.49689679351944205,
+          "retrieved_chunk_ids": [
+            "sample.txt:pNone:c10",
+            "sample.txt:pNone:c4",
+            "sample.txt:pNone:c5",
+            "sample.txt:pNone:c7",
+            "sample.txt:pNone:c3"
+          ],
+          "retrieved_scores": [
+            0.49689679351944205,
+            0.4483708845735256,
+            0.4084984293060788,
+            0.3784080593407664,
+            0.3284581744082066
+          ]
+        },
+        {
+          "id": "tuition-fee",
+          "category": "out_of_scope",
+          "question": "Học phí học kỳ này là bao nhiêu?",
+          "decision": "REJECTED",
+          "top_score": 0.4096071538189431,
+          "retrieved_chunk_ids": [
+            "sample.txt:pNone:c0",
+            "sample.txt:pNone:c4",
+            "sample.txt:pNone:c2",
+            "sample.txt:pNone:c10",
+            "sample.txt:pNone:c8"
+          ],
+          "retrieved_scores": [
+            0.4096071538189431,
+            0.35724595475272247,
+            0.33653829944856906,
+            0.32424262844194485,
+            0.32112221431901733
+          ]
+        },
+        {
+          "id": "dormitory-fee",
+          "category": "out_of_scope",
+          "question": "Phí ở ký túc xá mỗi tháng là bao nhiêu?",
+          "decision": "REJECTED",
+          "top_score": 0.29706809469712064,
+          "retrieved_chunk_ids": [
+            "sample.txt:pNone:c10",
+            "sample.txt:pNone:c4",
+            "sample.txt:pNone:c1",
+            "sample.txt:pNone:c2",
+            "sample.txt:pNone:c7"
+          ],
+          "retrieved_scores": [
+            0.29706809469712064,
+            0.29702917260258854,
+            0.23871981693027444,
+            0.2228721409530195,
+            0.17664665663619927
+          ]
+        }
+      ],
+      "run_configuration": {
+        "embedding_model": "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2",
+        "embedding_dimension": 384,
+        "collection": "rag_evaluation_v2_chunking-v2-fixed_sentence_transformers_paraphrase_multilingual_minilm_l12_v2",
+        "storage_path": "results\\qdrant_evaluation\\chunking-v2-fixed\\sentence_transformers_paraphrase_multilingual_minilm_l12_v2",
+        "data_path": "data",
+        "chunking": {
+          "strategy": "fixed",
+          "chunk_size": 700,
+          "chunk_overlap": 100
+        },
+        "chunking_integrity": {
+          "chunk_count": 12,
+          "chunks_with_section": 0,
+          "unavoidable_splits": 0,
+          "maximum_chunk_length": 700
+        },
+        "top_k": 5,
+        "min_score": 0.5
+      }
+    },
+    {
+      "metrics": {
+        "recall_at_5": 1.0,
+        "precision_at_5": 0.19999999999999998,
+        "mrr": 0.9166666666666666,
+        "ndcg_at_5": 0.9384882922619097,
+        "hit_at_5": 1.0
+      },
+      "by_category": {
+        "regulations": {
+          "query_count": 3,
+          "metrics": {
+            "recall_at_5": 1.0,
+            "precision_at_5": 0.20000000000000004,
+            "mrr": 1.0,
+            "ndcg_at_5": 1.0,
+            "hit_at_5": 1.0
+          }
+        },
+        "numerical_values": {
+          "query_count": 2,
+          "metrics": {
+            "recall_at_5": 1.0,
+            "precision_at_5": 0.2,
+            "mrr": 1.0,
+            "ndcg_at_5": 1.0,
+            "hit_at_5": 1.0
+          }
+        },
+        "tables": {
+          "query_count": 0,
+          "metrics": {}
+        },
+        "formulas": {
+          "query_count": 0,
+          "metrics": {}
+        },
+        "multi_step_reasoning": {
+          "query_count": 1,
+          "metrics": {
+            "recall_at_5": 1.0,
+            "precision_at_5": 0.2,
+            "mrr": 0.5,
+            "ndcg_at_5": 0.6309297535714575,
+            "hit_at_5": 1.0
+          }
+        },
+        "out_of_scope": {
+          "query_count": 3,
+          "accepted_count": 1,
+          "rejected_count": 2
+        }
+      },
+      "ground_truth_results": [
+        {
+          "id": "borrow-limit",
+          "category": "numerical_values",
+          "question": "Sinh viên được mượn tối đa bao nhiêu quyển sách trong một lần mượn?",
+          "expected_anchor": "Sinh viên được mượn tối đa 5 quyển sách trong một lần mượn.",
+          "relevant_chunk_ids": [],
+          "relevant_total": 1,
+          "relevant_retrieved_ids": [
+            "sample.txt:pNone:c2"
+          ],
+          "relevant_ranks": [
+            1
+          ],
+          "first_relevant_rank": 1,
+          "top_score": 0.7268367227927152,
+          "retrieved_chunk_ids": [
+            "sample.txt:pNone:c2",
+            "sample.txt:pNone:c3",
+            "sample.txt:pNone:c9",
+            "sample.txt:pNone:c4",
+            "sample.txt:pNone:c7"
+          ],
+          "retrieved_scores": [
+            0.7268367227927152,
+            0.6880594871784765,
+            0.6754704648507229,
+            0.6209875344766762,
+            0.618586577792245
+          ]
+        },
+        {
+          "id": "loan-period",
+          "category": "regulations",
+          "question": "Thời hạn mượn sách được tính như thế nào?",
+          "expected_anchor": "Thời hạn mượn sách là 14 ngày kể từ ngày nhận sách.",
+          "relevant_chunk_ids": [],
+          "relevant_total": 1,
+          "relevant_retrieved_ids": [
+            "sample.txt:pNone:c3"
+          ],
+          "relevant_ranks": [
+            1
+          ],
+          "first_relevant_rank": 1,
+          "top_score": 0.7239798006867386,
+          "retrieved_chunk_ids": [
+            "sample.txt:pNone:c3",
+            "sample.txt:pNone:c9",
+            "sample.txt:pNone:c5",
+            "sample.txt:pNone:c4",
+            "sample.txt:pNone:c10"
+          ],
+          "retrieved_scores": [
+            0.7239798006867386,
+            0.6881906073180574,
+            0.6605064187285252,
+            0.6515929279464218,
+            0.6417370019905752
+          ]
+        },
+        {
+          "id": "renewal-condition",
+          "category": "regulations",
+          "question": "Một tài liệu được gia hạn bao nhiêu lần và tối đa bao lâu?",
+          "expected_anchor": "Mỗi tài liệu chỉ được gia hạn một lần, tối đa 7 ngày, nếu sách không có người đặt trước.",
+          "relevant_chunk_ids": [],
+          "relevant_total": 1,
+          "relevant_retrieved_ids": [
+            "sample.txt:pNone:c4"
+          ],
+          "relevant_ranks": [
+            1
+          ],
+          "first_relevant_rank": 1,
+          "top_score": 0.669094813625879,
+          "retrieved_chunk_ids": [
+            "sample.txt:pNone:c4",
+            "sample.txt:pNone:c10",
+            "sample.txt:pNone:c3",
+            "sample.txt:pNone:c9",
+            "sample.txt:pNone:c5"
+          ],
+          "retrieved_scores": [
+            0.669094813625879,
+            0.6036665454950687,
+            0.5863338879912392,
+            0.5838166579787814,
+            0.5835120775859597
+          ]
+        },
+        {
+          "id": "saturday-hours",
+          "category": "numerical_values",
+          "question": "Thư viện mở cửa thứ Bảy trong khung giờ nào?",
+          "expected_anchor": "Thứ Bảy, thư viện mở từ 08:00 đến 12:00.",
+          "relevant_chunk_ids": [],
+          "relevant_total": 1,
+          "relevant_retrieved_ids": [
+            "sample.txt:pNone:c1"
+          ],
+          "relevant_ranks": [
+            1
+          ],
+          "first_relevant_rank": 1,
+          "top_score": 0.7332210890959922,
+          "retrieved_chunk_ids": [
+            "sample.txt:pNone:c1",
+            "sample.txt:pNone:c10",
+            "sample.txt:pNone:c9",
+            "sample.txt:pNone:c3",
+            "sample.txt:pNone:c7"
+          ],
+          "retrieved_scores": [
+            0.7332210890959922,
+            0.6310771387315042,
+            0.548354571093302,
+            0.5249198128157975,
+            0.5231245265176454
+          ]
+        },
+        {
+          "id": "reservation-hold",
+          "category": "regulations",
+          "question": "Tài liệu đặt trước được giữ trong bao lâu?",
+          "expected_anchor": "Tài liệu được giữ tại quầy trong 3 ngày làm việc kể từ thời điểm thông báo.",
+          "relevant_chunk_ids": [],
+          "relevant_total": 1,
+          "relevant_retrieved_ids": [
+            "sample.txt:pNone:c6"
+          ],
+          "relevant_ranks": [
+            1
+          ],
+          "first_relevant_rank": 1,
+          "top_score": 0.6878064291875936,
+          "retrieved_chunk_ids": [
+            "sample.txt:pNone:c6",
+            "sample.txt:pNone:c10",
+            "sample.txt:pNone:c4",
+            "sample.txt:pNone:c5",
+            "sample.txt:pNone:c7"
+          ],
+          "retrieved_scores": [
+            0.6878064291875936,
+            0.6147311587642643,
+            0.5827602433395902,
+            0.5684423214024426,
+            0.5494503983992366
+          ]
+        },
+        {
+          "id": "study-room-duration",
+          "category": "multi_step_reasoning",
+          "question": "Mỗi lượt sử dụng khu vực học nhóm tối đa bao lâu?",
+          "expected_anchor": "mỗi lượt đăng ký tối đa 2 giờ.",
+          "relevant_chunk_ids": [],
+          "relevant_total": 1,
+          "relevant_retrieved_ids": [
+            "sample.txt:pNone:c7"
+          ],
+          "relevant_ranks": [
+            2
+          ],
+          "first_relevant_rank": 2,
+          "top_score": 0.6384304519626646,
+          "retrieved_chunk_ids": [
+            "sample.txt:pNone:c10",
+            "sample.txt:pNone:c7",
+            "sample.txt:pNone:c6",
+            "sample.txt:pNone:c9",
+            "sample.txt:pNone:c4"
+          ],
+          "retrieved_scores": [
+            0.6384304519626646,
+            0.6313775361272351,
+            0.6140144560094931,
+            0.5216417059877378,
+            0.4957146238149303
+          ]
+        }
+      ],
+      "out_of_scope_results": [
+        {
+          "id": "exam-schedule",
+          "category": "out_of_scope",
+          "question": "Lịch thi cuối kỳ môn Cấu trúc dữ liệu là ngày nào?",
+          "decision": "ACCEPTED",
+          "top_score": 0.5213388356228785,
+          "retrieved_chunk_ids": [
+            "sample.txt:pNone:c10",
+            "sample.txt:pNone:c6",
+            "sample.txt:pNone:c1",
+            "sample.txt:pNone:c4",
+            "sample.txt:pNone:c7"
+          ],
+          "retrieved_scores": [
+            0.5213388356228785,
+            0.44308008338198185,
+            0.4360405772044334,
+            0.4357513048508727,
+            0.4195156318864779
+          ]
+        },
+        {
+          "id": "tuition-fee",
+          "category": "out_of_scope",
+          "question": "Học phí học kỳ này là bao nhiêu?",
+          "decision": "REJECTED",
+          "top_score": 0.4688807258929752,
+          "retrieved_chunk_ids": [
+            "sample.txt:pNone:c2",
+            "sample.txt:pNone:c10",
+            "sample.txt:pNone:c7",
+            "sample.txt:pNone:c6",
+            "sample.txt:pNone:c8"
+          ],
+          "retrieved_scores": [
+            0.4688807258929752,
+            0.452456335777638,
+            0.44878693711921047,
+            0.44712979059055197,
+            0.43503729007320885
+          ]
+        },
+        {
+          "id": "dormitory-fee",
+          "category": "out_of_scope",
+          "question": "Phí ở ký túc xá mỗi tháng là bao nhiêu?",
+          "decision": "REJECTED",
+          "top_score": 0.4706780167678374,
+          "retrieved_chunk_ids": [
+            "sample.txt:pNone:c2",
+            "sample.txt:pNone:c6",
+            "sample.txt:pNone:c10",
+            "sample.txt:pNone:c7",
+            "sample.txt:pNone:c3"
+          ],
+          "retrieved_scores": [
+            0.4706780167678374,
+            0.4510716133207989,
+            0.45105445886246087,
+            0.4477769807914374,
+            0.4469878705785719
+          ]
+        }
+      ],
+      "run_configuration": {
+        "embedding_model": "BAAI/bge-m3",
+        "embedding_dimension": 1024,
+        "collection": "rag_evaluation_v2_chunking-v2-fixed_baai_bge_m3",
+        "storage_path": "results\\qdrant_evaluation\\chunking-v2-fixed\\baai_bge_m3",
+        "data_path": "data",
+        "chunking": {
+          "strategy": "fixed",
+          "chunk_size": 700,
+          "chunk_overlap": 100
+        },
+        "chunking_integrity": {
+          "chunk_count": 12,
+          "chunks_with_section": 0,
+          "unavoidable_splits": 0,
+          "maximum_chunk_length": 700
+        },
+        "top_k": 5,
+        "min_score": 0.5
+      }
+    }
+  ]
+}

@@ -1,0 +1,13 @@
+accepted_count,category,embedding_dimension,hit_at_5,model,mrr,ndcg_at_5,precision_at_5,query_count,recall_at_5,rejected_count
+,regulations,384,1.0,sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2,0.8333333333333334,0.8769765845238192,0.20000000000000004,3,1.0,
+,numerical_values,384,1.0,sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2,1.0,1.0,0.2,2,1.0,
+,tables,384,,sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2,,,,0,,
+,formulas,384,,sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2,,,,0,,
+,multi_step_reasoning,384,1.0,sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2,1.0,1.0,0.2,1,1.0,
+1,out_of_scope,384,,sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2,,,,3,,2
+,regulations,1024,1.0,BAAI/bge-m3,1.0,1.0,0.20000000000000004,3,1.0,
+,numerical_values,1024,1.0,BAAI/bge-m3,1.0,1.0,0.2,2,1.0,
+,tables,1024,,BAAI/bge-m3,,,,0,,
+,formulas,1024,,BAAI/bge-m3,,,,0,,
+,multi_step_reasoning,1024,1.0,BAAI/bge-m3,1.0,1.0,0.2,1,1.0,
+0,out_of_scope,1024,,BAAI/bge-m3,,,,3,,3

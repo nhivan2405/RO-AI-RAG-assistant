@@ -153,6 +153,8 @@ class PersistentVectorStore:
                 "source": chunk.source,
                 "page": chunk.page,
                 "chunk_id": chunk.chunk_id,
+                "section": chunk.section,
+                "split_reason": chunk.split_reason,
                 "content_hash": content_hash,
             },
         }
@@ -208,5 +210,14 @@ def _get_collection_dimension(collection: Any) -> int:
 
 
 def _content_hash(chunk: Chunk) -> str:
-    content = "\x1f".join((chunk.chunk_id, chunk.source, str(chunk.page), chunk.text))
+    content = "\x1f".join(
+        (
+            chunk.chunk_id,
+            chunk.source,
+            str(chunk.page),
+            str(chunk.section),
+            str(chunk.split_reason),
+            chunk.text,
+        )
+    )
     return hashlib.sha256(content.encode("utf-8")).hexdigest()

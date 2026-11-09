@@ -30,6 +30,15 @@ class ConfigTest(unittest.TestCase):
             with self.assertRaisesRegex(ValueError, "chunking.chunk_overlap"):
                 load_config(path)
 
+    def test_accepts_structure_aware_chunking(self):
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "config.yaml"
+            path.write_text("chunking:\n  strategy: structure_aware\n", encoding="utf-8")
+
+            config = load_config(path)
+
+        self.assertEqual(config["chunking"]["strategy"], "structure_aware")
+
     def test_rejects_invalid_min_score(self):
         with tempfile.TemporaryDirectory() as directory:
             path = Path(directory) / "config.yaml"

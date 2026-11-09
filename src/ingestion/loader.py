@@ -76,8 +76,49 @@ def _load_pdf_file(path: Path) -> list[DocumentRecord]:
 
 def _load_docx_file(path: Path) -> list[DocumentRecord]:
     document = Document(path)
-    text = "\n".join(paragraph.text for paragraph in document.paragraphs if paragraph.text.strip())
+    text = "\n\n".join(_iter_docx_blocks(document))
     return _record_if_not_blank(path.name, None, text)
+
+
+def _iter_docx_blocks(document: Document) -> list[str]:
+    """Giữ thứ tự paragraph và bảng như trong body DOCX."""
+    paragraphs = {paragraph._p: paragraph for paragraph in document.paragraphs}
+    tables = {table._tbl: table for table in document.tables}
+    blocks: list[str] = []
+    for element in document.element.body.iterchildren():
+        if element in paragraphs:
+            text = _format_docx_paragraph(paragraphs[element])
+        elif element in tables:
+            text = _format_docx_table(tables[element])
+        else:
+            continue
+        if text.strip():
+            blocks.append(text)
+    return blocks
+
+
+def _format_docx_paragraph(paragraph) -> str:
+    """Đánh dấu heading DOCX để chunking giữ được cấu trúc nguồn."""
+    style_name = paragraph.style.name if paragraph.style is not None else ""
+    if style_name.lower().startswith("heading"):
+        return f"# {paragraph.text}"
+    return paragraph.text
+
+
+def _format_docx_table(table) -> str:
+    """Chuẩn hóa bảng DOCX thành Markdown để giữ header và các dòng."""
+    rows = [
+        [cell.text.strip().replace("\n", " ") for cell in row.cells]
+        for row in table.rows
+    ]
+    if not rows or not rows[0]:
+        return ""
+    width = len(rows[0])
+    normalized_rows = [row[:width] + [""] * max(0, width - len(row)) for row in rows]
+    header = normalized_rows[0]
+    separator = ["---"] * width
+    markdown_rows = [header, separator, *normalized_rows[1:]]
+    return "\n".join("| " + " | ".join(row) + " |" for row in markdown_rows)
 
 
 def _record_if_not_blank(source: str, page: int | None, text: str) -> list[DocumentRecord]:
