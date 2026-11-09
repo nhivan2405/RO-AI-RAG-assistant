@@ -25,6 +25,7 @@ DEFAULT_CONFIG: dict[str, dict[str, Any]] = {
         "collection_name": "rag_demo",
     },
     "logging": {"level": "INFO", "file": "logs/app.log"},
+    "prompts": {"context_token_budget": 1200},
     "evaluation": {
         "embedding_models": [
             "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2"
@@ -106,6 +107,14 @@ def _validate_config(config: dict[str, dict[str, Any]]) -> None:
     log_file = logging_config["file"]
     if not isinstance(log_file, str) or not log_file.strip():
         raise ValueError("logging.file must be a non-empty string")
+
+    context_token_budget = config["prompts"]["context_token_budget"]
+    if (
+        not isinstance(context_token_budget, int)
+        or isinstance(context_token_budget, bool)
+        or context_token_budget <= 0
+    ):
+        raise ValueError("prompts.context_token_budget must be a positive integer")
 
     evaluation_models = config["evaluation"]["embedding_models"]
     if not isinstance(evaluation_models, list) or not evaluation_models:
