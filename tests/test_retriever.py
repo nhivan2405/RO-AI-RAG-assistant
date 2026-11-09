@@ -22,6 +22,22 @@ class RetrieverTest(unittest.TestCase):
     def test_is_answerable_accepts_score_above_threshold(self):
         self.assertTrue(self.retriever.is_answerable([{"score": 0.51}]))
 
+    def test_filter_hits_applies_threshold_stable_ranking_and_deduplication(self):
+        hits = [
+            {"score": 0.8, "chunk_id": "b"},
+            {"score": 0.8, "chunk_id": "a"},
+            {"score": 0.7, "chunk_id": "a"},
+            {"score": 0.49, "chunk_id": "c"},
+        ]
+
+        filtered = self.retriever.filter_hits(hits, top_k=2)
+
+        self.assertEqual([hit["chunk_id"] for hit in filtered], ["a", "b"])
+
+    def test_filter_hits_handles_empty_and_non_positive_top_k(self):
+        self.assertEqual(self.retriever.filter_hits([], top_k=5), [])
+        self.assertEqual(self.retriever.filter_hits([{"score": 0.9}], top_k=0), [])
+
     @patch("main.answer_with_gemini")
     @patch("main.RagIndex")
     @patch("main.chunk_documents")

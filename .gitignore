@@ -24,3 +24,5 @@ Thumbs.db
 logs/
 *.log
 results/local/
+
+/results/qdrant_evaluation/

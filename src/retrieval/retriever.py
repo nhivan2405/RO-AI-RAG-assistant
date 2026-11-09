@@ -32,3 +32,27 @@ class Retriever:
             self.min_score,
         )
         return is_accepted
+
+    def filter_hits(
+        self,
+        hits: Sequence[dict[str, Any]],
+        top_k: int | None = None,
+    ) -> list[dict[str, Any]]:
+        """Lọc score, ổn định thứ hạng và loại chunk trùng lặp."""
+        if top_k is not None and top_k <= 0:
+            return []
+        ranked = sorted(
+            hits,
+            key=lambda hit: (-float(hit["score"]), str(hit.get("chunk_id", ""))),
+        )
+        unique_hits: list[dict[str, Any]] = []
+        seen_chunk_ids: set[str] = set()
+        for hit in ranked:
+            chunk_id = str(hit.get("chunk_id", ""))
+            if chunk_id in seen_chunk_ids or float(hit["score"]) < self.min_score:
+                continue
+            seen_chunk_ids.add(chunk_id)
+            unique_hits.append(hit)
+            if top_k is not None and len(unique_hits) == top_k:
+                break
+        return unique_hits

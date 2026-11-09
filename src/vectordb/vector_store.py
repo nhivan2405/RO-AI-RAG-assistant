@@ -81,20 +81,30 @@ class PersistentVectorStore:
         logger.info("qdrant_indexing_completed indexed_count=%s", len(points))
         return len(points)
 
-    def search(self, vector: Sequence[float], top_k: int) -> list[dict[str, Any]]:
-        """Truy vấn collection bằng embedding có dimension tương thích."""
+    def search(
+        self,
+        vector: Sequence[float],
+        top_k: int,
+        source: str | None = None,
+        section: str | None = None,
+        page: int | None = None,
+    ) -> list[dict[str, Any]]:
+        """Truy vấn cosine có Top-K và metadata filter tùy chọn."""
         self._validate_vector(vector)
+        if top_k <= 0:
+            return []
         try:
             result = self.client.query_points(
                 collection_name=self.collection_name,
                 query=list(vector),
                 limit=top_k,
                 with_payload=True,
+                query_filter=_build_metadata_filter(source, section, page),
             )
         except (OSError, RuntimeError, ValueError, sqlite3.Error) as error:
             logger.error("qdrant_search_failed error_type=%s", type(error).__name__)
             raise
-        return [{"score": float(hit.score), **dict(hit.payload or {})} for hit in result.points]
+        return _rank_unique_hits(result.points)
 
     def close(self) -> None:
         """Đóng client để dữ liệu local được giải phóng trước khi mở lại."""
@@ -221,3 +231,38 @@ def _content_hash(chunk: Chunk) -> str:
         )
     )
     return hashlib.sha256(content.encode("utf-8")).hexdigest()
+
+
+def _build_metadata_filter(
+    source: str | None,
+    section: str | None,
+    page: int | None,
+) -> models.Filter | None:
+    conditions = []
+    for key, value in (("source", source), ("section", section), ("page", page)):
+        if value is not None:
+            conditions.append(
+                models.FieldCondition(key=key, match=models.MatchValue(value=value))
+            )
+    return models.Filter(must=conditions) if conditions else None
+
+
+def _rank_unique_hits(points: Sequence[Any]) -> list[dict[str, Any]]:
+    ranked = sorted(
+        points,
+        key=lambda hit: (
+            -float(hit.score),
+            str((hit.payload or {}).get("chunk_id", "")),
+            str(hit.id),
+        ),
+    )
+    seen_chunk_ids: set[str] = set()
+    hits: list[dict[str, Any]] = []
+    for hit in ranked:
+        payload = dict(hit.payload or {})
+        chunk_id = str(payload.get("chunk_id", hit.id))
+        if chunk_id in seen_chunk_ids:
+            continue
+        seen_chunk_ids.add(chunk_id)
+        hits.append({"score": float(hit.score), **payload})
+    return hits

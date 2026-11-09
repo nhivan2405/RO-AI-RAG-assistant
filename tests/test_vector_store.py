@@ -111,6 +111,28 @@ class PersistentVectorStoreTest(unittest.TestCase):
                 store.index_chunks(self._chunks()[:1], [[0.1, 0.2, 0.3]])
             store.close()
 
+    def test_filters_hits_by_source_section_and_page(self):
+        with tempfile.TemporaryDirectory() as directory:
+            store = self._create_store(directory)
+            chunks = [
+                Chunk("A", "guide.txt", 1, "guide.txt:p1:c0", section="# One"),
+                Chunk("B", "guide.txt", 2, "guide.txt:p2:c0", section="# Two"),
+                Chunk("C", "other.txt", 1, "other.txt:p1:c0", section="# One"),
+            ]
+            vectors = [[1.0] + [0.0] * 383, [0.8] + [0.0] * 383, [0.7] + [0.0] * 383]
+            store.index_chunks(chunks, vectors)
+
+            hits = store.search(
+                [1.0] + [0.0] * 383,
+                top_k=5,
+                source="guide.txt",
+                section="# One",
+                page=1,
+            )
+            store.close()
+
+        self.assertEqual([hit["chunk_id"] for hit in hits], ["guide.txt:p1:c0"])
+
     @staticmethod
     def _create_store(directory: str) -> PersistentVectorStore:
         return PersistentVectorStore(

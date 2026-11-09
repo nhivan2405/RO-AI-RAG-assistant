@@ -7,7 +7,7 @@ from src.chunking.chunker import Chunk, make_chunks
 from src.config import load_config
 from src.embeddings.embedder import Embedder
 from src.ingestion.loader import load_documents
-from src.retrieval.retriever import FALLBACK_MESSAGE
+from src.retrieval.retriever import FALLBACK_MESSAGE, Retriever
 from src.utils.helpers import get_logger
 from src.vectordb.vector_store import PersistentVectorStore
 
@@ -55,9 +55,29 @@ class RagIndex:
         self.vector_store.index_chunks(chunks, vectors)
         return dimension
 
-    def search(self, question, top_k=5):
+    def search(
+        self,
+        question,
+        top_k=5,
+        source=None,
+        section=None,
+        page=None,
+        min_score=None,
+    ):
         query = self.embedder.embed_query(question)
-        return self.vector_store.search(query, top_k)
+        if source is None and section is None and page is None:
+            hits = self.vector_store.search(query, top_k)
+        else:
+            hits = self.vector_store.search(
+                query,
+                top_k,
+                source=source,
+                section=section,
+                page=page,
+            )
+        if min_score is None:
+            return hits
+        return Retriever(min_score).filter_hits(hits, top_k)
 
 def make_prompt(question,hits):
     context="\n\n".join(f"[{i}] Nguồn: {h['source']}, trang: {h['page'] or 'N/A'}\n{h['text']}" for i,h in enumerate(hits,1))
