@@ -1,0 +1,152 @@
+{
+  "metrics": {
+    "hit_at_5": 1.0,
+    "mrr": 0.9166666666666666
+  },
+  "ground_truth_results": [
+    {
+      "id": "borrow-limit",
+      "question": "Sinh viên được mượn tối đa bao nhiêu quyển sách trong một lần mượn?",
+      "expected_anchor": "Sinh viên được mượn tối đa 5 quyển sách trong một lần mượn.",
+      "first_relevant_rank": 1,
+      "hit_at_k": true,
+      "reciprocal_rank": 1.0,
+      "top_chunk_ids": [
+        "sample.txt:pNone:c2",
+        "sample.txt:pNone:c10",
+        "sample.txt:pNone:c4",
+        "sample.txt:pNone:c7",
+        "sample.txt:pNone:c8"
+      ]
+    },
+    {
+      "id": "loan-period",
+      "question": "Thời hạn mượn sách được tính như thế nào?",
+      "expected_anchor": "Thời hạn mượn sách là 14 ngày kể từ ngày nhận sách.",
+      "first_relevant_rank": 1,
+      "hit_at_k": true,
+      "reciprocal_rank": 1.0,
+      "top_chunk_ids": [
+        "sample.txt:pNone:c3",
+        "sample.txt:pNone:c4",
+        "sample.txt:pNone:c10",
+        "sample.txt:pNone:c6",
+        "sample.txt:pNone:c5"
+      ]
+    },
+    {
+      "id": "renewal-condition",
+      "question": "Một tài liệu được gia hạn bao nhiêu lần và tối đa bao lâu?",
+      "expected_anchor": "Mỗi tài liệu chỉ được gia hạn một lần, tối đa 7 ngày, nếu sách không có người đặt trước.",
+      "first_relevant_rank": 1,
+      "hit_at_k": true,
+      "reciprocal_rank": 1.0,
+      "top_chunk_ids": [
+        "sample.txt:pNone:c4",
+        "sample.txt:pNone:c6",
+        "sample.txt:pNone:c3",
+        "sample.txt:pNone:c5",
+        "sample.txt:pNone:c10"
+      ]
+    },
+    {
+      "id": "saturday-hours",
+      "question": "Thư viện mở cửa thứ Bảy trong khung giờ nào?",
+      "expected_anchor": "Thứ Bảy, thư viện mở từ 08:00 đến 12:00.",
+      "first_relevant_rank": 1,
+      "hit_at_k": true,
+      "reciprocal_rank": 1.0,
+      "top_chunk_ids": [
+        "sample.txt:pNone:c1",
+        "sample.txt:pNone:c10",
+        "sample.txt:pNone:c4",
+        "sample.txt:pNone:c7",
+        "sample.txt:pNone:c3"
+      ]
+    },
+    {
+      "id": "reservation-hold",
+      "question": "Tài liệu đặt trước được giữ trong bao lâu?",
+      "expected_anchor": "Tài liệu được giữ tại quầy trong 3 ngày làm việc kể từ thời điểm thông báo.",
+      "first_relevant_rank": 2,
+      "hit_at_k": true,
+      "reciprocal_rank": 0.5,
+      "top_chunk_ids": [
+        "sample.txt:pNone:c4",
+        "sample.txt:pNone:c6",
+        "sample.txt:pNone:c3",
+        "sample.txt:pNone:c5",
+        "sample.txt:pNone:c10"
+      ]
+    },
+    {
+      "id": "study-room-duration",
+      "question": "Mỗi lượt sử dụng khu vực học nhóm tối đa bao lâu?",
+      "expected_anchor": "mỗi lượt đăng ký tối đa 2 giờ.",
+      "first_relevant_rank": 1,
+      "hit_at_k": true,
+      "reciprocal_rank": 1.0,
+      "top_chunk_ids": [
+        "sample.txt:pNone:c7",
+        "sample.txt:pNone:c4",
+        "sample.txt:pNone:c8",
+        "sample.txt:pNone:c10",
+        "sample.txt:pNone:c3"
+      ]
+    }
+  ],
+  "out_of_scope_results": [
+    {
+      "id": "exam-schedule",
+      "question": "Lịch thi cuối kỳ môn Cấu trúc dữ liệu là ngày nào?",
+      "decision": "REJECTED",
+      "top_score": 0.4509515623622439,
+      "top_chunk_ids": [
+        "sample.txt:pNone:c4",
+        "sample.txt:pNone:c7",
+        "sample.txt:pNone:c3",
+        "sample.txt:pNone:c5",
+        "sample.txt:pNone:c10"
+      ]
+    },
+    {
+      "id": "tuition-fee",
+      "question": "Học phí học kỳ này là bao nhiêu?",
+      "decision": "REJECTED",
+      "top_score": 0.4096071538189431,
+      "top_chunk_ids": [
+        "sample.txt:pNone:c0",
+        "sample.txt:pNone:c2",
+        "sample.txt:pNone:c4",
+        "sample.txt:pNone:c7",
+        "sample.txt:pNone:c8"
+      ]
+    },
+    {
+      "id": "dormitory-fee",
+      "question": "Phí ở ký túc xá mỗi tháng là bao nhiêu?",
+      "decision": "REJECTED",
+      "top_score": 0.2853860574264512,
+      "top_chunk_ids": [
+        "sample.txt:pNone:c4",
+        "sample.txt:pNone:c2",
+        "sample.txt:pNone:c7",
+        "sample.txt:pNone:c10",
+        "sample.txt:pNone:c1"
+      ]
+    }
+  ],
+  "run_configuration": {
+    "data_path": "data",
+    "collection": "rag_evaluation_baseline",
+    "embedding_model": "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2",
+    "embedding_dimension": 384,
+    "chunking": {
+      "strategy": "recursive",
+      "chunk_size": 700,
+      "chunk_overlap": 100
+    },
+    "top_k": 5,
+    "min_score": 0.5
+  }
+}

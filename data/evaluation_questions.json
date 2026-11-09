@@ -1,32 +1,11 @@
 [
-  {
-    "question": "Sinh viên được mượn tối đa mấy quyển sách?",
-    "answer_hint": "5 quyển",
-    "source": "sample.txt"
-  },
-  {
-    "question": "Thời hạn mượn sách là bao lâu?",
-    "answer_hint": "14 ngày",
-    "source": "sample.txt"
-  },
-  {
-    "question": "Thứ Bảy thư viện mở đến mấy giờ?",
-    "answer_hint": "12:00",
-    "source": "sample.txt"
-  },
-  {
-    "question": "Sinh viên có được gia hạn sách bao nhiêu lần?",
-    "answer_hint": "một lần",
-    "source": "sample.txt"
-  },
-  {
-    "question": "Thư viện có mở Chủ nhật không?",
-    "answer_hint": "không mở",
-    "source": "sample.txt"
-  },
-  {
-    "question": "Học phí học kỳ này là bao nhiêu?",
-    "answer_hint": null,
-    "source": null
-  }
+  {"id": "borrow-limit", "type": "ground_truth", "question": "Sinh viên được mượn tối đa bao nhiêu quyển sách trong một lần mượn?", "expected_anchor": "Sinh viên được mượn tối đa 5 quyển sách trong một lần mượn."},
+  {"id": "loan-period", "type": "ground_truth", "question": "Thời hạn mượn sách được tính như thế nào?", "expected_anchor": "Thời hạn mượn sách là 14 ngày kể từ ngày nhận sách."},
+  {"id": "renewal-condition", "type": "ground_truth", "question": "Một tài liệu được gia hạn bao nhiêu lần và tối đa bao lâu?", "expected_anchor": "Mỗi tài liệu chỉ được gia hạn một lần, tối đa 7 ngày, nếu sách không có người đặt trước."},
+  {"id": "saturday-hours", "type": "ground_truth", "question": "Thư viện mở cửa thứ Bảy trong khung giờ nào?", "expected_anchor": "Thứ Bảy, thư viện mở từ 08:00 đến 12:00."},
+  {"id": "reservation-hold", "type": "ground_truth", "question": "Tài liệu đặt trước được giữ trong bao lâu?", "expected_anchor": "Tài liệu được giữ tại quầy trong 3 ngày làm việc kể từ thời điểm thông báo."},
+  {"id": "study-room-duration", "type": "ground_truth", "question": "Mỗi lượt sử dụng khu vực học nhóm tối đa bao lâu?", "expected_anchor": "mỗi lượt đăng ký tối đa 2 giờ."},
+  {"id": "exam-schedule", "type": "out_of_scope", "question": "Lịch thi cuối kỳ môn Cấu trúc dữ liệu là ngày nào?"},
+  {"id": "tuition-fee", "type": "out_of_scope", "question": "Học phí học kỳ này là bao nhiêu?"},
+  {"id": "dormitory-fee", "type": "out_of_scope", "question": "Phí ở ký túc xá mỗi tháng là bao nhiêu?"}
 ]
