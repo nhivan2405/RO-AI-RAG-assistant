@@ -44,6 +44,7 @@ def build_context(
         citation_id = len(citations) + 1
         evidence = f"[{citation_id}] {hit['text']}"
         evidence_tokens = _count_tokens(evidence)
+        # Bỏ toàn bộ evidence quá ngân sách để citation không trỏ vào văn bản bị cắt.
         if used_tokens + evidence_tokens > token_budget:
             continue
         selected_parts.append(evidence)
@@ -65,6 +66,7 @@ def _rank_unique_evidence(hits: Sequence[dict[str, Any]]) -> list[dict[str, Any]
     seen_keys: set[str] = set()
     unique_hits: list[dict[str, Any]] = []
     for _, _, hit in sorted(ranked, key=lambda item: (-item[0], item[1])):
+        # Dùng text chuẩn hóa khi nguồn chưa có chunk_id ổn định.
         key = str(hit.get("chunk_id") or _normalize_text(hit["text"]))
         if key in seen_keys:
             continue

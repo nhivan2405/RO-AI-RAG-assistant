@@ -8,6 +8,7 @@ from src.pipeline import RagIndex
 MINILM_MODEL = "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2"
 
 
+# Bảo vệ public API RagIndex khi component nội bộ được tách nhỏ.
 class RagIndexCompatibilityTest(unittest.TestCase):
     @patch("src.pipeline.PersistentVectorStore")
     @patch("src.pipeline.Embedder")
@@ -47,3 +48,37 @@ class RagIndexCompatibilityTest(unittest.TestCase):
         embedder.embed_texts.assert_called_once_with(["Nội dung"])
         vector_store.index_chunks.assert_called_once_with(chunks, [[0.1] * 384])
         vector_store.search.assert_called_once_with([0.2] * 384, 3)
+
+    @patch("src.pipeline.PersistentVectorStore")
+    @patch("src.pipeline.Embedder")
+    @patch("src.pipeline.load_config")
+    def test_cloud_backend_uses_isolated_collection_and_metadata(
+        self,
+        load_config_mock,
+        embedder_class,
+        vector_store_class,
+    ):
+        load_config_mock.return_value = {
+            "models": {"embedding": MINILM_MODEL, "gemini": "gemini-2.5-flash"},
+            "vectordb": {
+                "backend": "cloud",
+                "storage_path": "qdrant_storage",
+                "collection_name": "rag_demo",
+                "cloud_collection_name": "rag_cloud",
+                "cloud_metadata_path": "qdrant_cloud_metadata",
+                "url": "http://localhost:6333",
+            },
+        }
+        embedder_class.return_value.expected_dimension = 384
+        vector_store_class.return_value.client = MagicMock()
+
+        index = RagIndex()
+
+        self.assertEqual(index.collection, "rag_cloud")
+        self.assertEqual(
+            vector_store_class.call_args.kwargs["metadata_path"],
+            "qdrant_cloud_metadata",
+        )
+        self.assertEqual(
+            vector_store_class.call_args.kwargs["backend"], "cloud"
+        )

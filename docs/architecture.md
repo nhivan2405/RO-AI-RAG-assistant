@@ -1,16 +1,16 @@
-# Kiến trúc đề xuất
+# Kiến trúc Rô AI RAG
 
 ![Kiến trúc RAG](diagrams/architecture.png)
 
 ## Luồng indexing
 
-Upload PDF/DOCX/TXT → kiểm tra định dạng và quyền truy cập → trích xuất → chuẩn hóa → Chunking → Embedding → Qdrant.
+TXT/PDF/DOCX → kiểm tra định dạng → trích xuất metadata có sẵn → Chunking → Embedding → Qdrant Local/Docker/Cloud.
 
 ![Luồng indexing](diagrams/ingestion.png)
 
 ## Luồng query
 
-Câu hỏi → Embedding câu hỏi → Retrieval Top-K → cung cấp context cho Gemini → câu trả lời và tham chiếu tài liệu.
+Câu hỏi → Embedding → Dense Retrieval Top-K → Context Builder → Gemini → câu trả lời có citation mapping.
 
 ![Indexing và query](diagrams/index_query.png)
 
@@ -18,4 +18,4 @@ Câu hỏi → Embedding câu hỏi → Retrieval Top-K → cung cấp context c
 
 ![OCR](diagrams/ingestion_ocr.png)
 
-OCR cho PDF scan/ảnh, Reranking, Hybrid retrieval và FastAPI là **định hướng**, chưa được tính là chức năng đã hoàn thành.
+OCR cho PDF scan/ảnh, reranking, hybrid retrieval, UI và FastAPI là **định hướng**, chưa được tính là chức năng đã hoàn thành.

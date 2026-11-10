@@ -10,6 +10,7 @@ MINILM_MODEL = "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2"
 BGE_M3_MODEL = "BAAI/bge-m3"
 
 
+# Bảo vệ persistence, schema payload và model compatibility của Qdrant Local.
 class PersistentVectorStoreTest(unittest.TestCase):
     def test_creates_collection_and_preserves_metadata(self):
         with tempfile.TemporaryDirectory() as directory:

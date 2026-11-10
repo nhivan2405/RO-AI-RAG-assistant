@@ -1,152 +1,125 @@
 <div align="center">
-  <img src="assets/fie-hcmute-logo.png" alt="Logo Khoa Đào tạo quốc tế - HCMUTE" width="160">
-
-  <h1>Rô AI Assistant</h1>
-  <p><strong>Hệ thống hỗ trợ tra cứu và ôn tập tài liệu học tập cho sinh viên FIE HCMUTE</strong></p>
+  <img src="assets/fie-hcmute-logo.png" alt="Logo khoa FIE HCMUTE" width="160">
+  <h1>Rô AI RAG Assistant</h1>
+  <p>Hệ thống tra cứu tài liệu học tập có căn cứ cho sinh viên.</p>
 </div>
-
-## Vấn đề
-
-Sinh viên khoa FIE thường phải đọc lại nhiều slide, giáo trình, tài liệu môn học và quy định trước kỳ thi. Với các kỳ thi mở tài liệu, việc được phép mang tài liệu không đồng nghĩa với việc có đủ thời gian tìm đúng phần cần dùng. Khi câu hỏi xuất hiện, việc lật nhiều tệp PDF, DOCX hoặc TXT trong thời gian ngắn dễ làm mất nhịp ôn tập và ảnh hưởng đến khả năng tổng hợp kiến thức.
-
-**Rô AI Assistant** hỗ trợ tra cứu trên chính bộ tài liệu người học cung cấp. Hệ thống được xây dựng theo hướng Retrieval-Augmented Generation (RAG): tìm các đoạn liên quan trong tài liệu trước, sau đó mới dùng chúng làm ngữ cảnh để tạo câu trả lời. Vì vậy, Rô AI là một hệ thống học tập dựa trên tài liệu, không phải chatbot hoặc chatbox trả lời tự do.
 
 ## Mục tiêu
 
-- Giúp sinh viên tìm nhanh nội dung trong tài liệu học tập.
-- Hỗ trợ ôn tập bằng câu trả lời bám sát các đoạn tài liệu đã truy xuất.
-- Hiển thị thông tin nguồn và trang khi dữ liệu có sẵn để người học tự kiểm tra.
-- Trả về thông báo rõ ràng khi tài liệu không có đủ căn cứ để trả lời.
+Sinh viên thường phải tìm lại quy định, công thức, bảng số liệu và hướng dẫn trong nhiều tài liệu, đặc biệt khi ôn tập hoặc làm bài thi mở tài liệu nhưng thời gian có hạn. Rô AI dùng Retrieval-Augmented Generation (RAG) để tìm các đoạn liên quan trước, sau đó chỉ tạo câu trả lời dựa trên evidence được chọn.
 
-## Tính năng đã triển khai
+Đây là hệ thống RAG theo tài liệu, không phải chatbot trả lời theo kiến thức không kiểm soát. Nếu evidence không đủ, hệ thống trả về thông báo an toàn thay vì suy đoán.
 
-- Đọc tài liệu `.txt`, `.pdf` có văn bản trích xuất được và `.docx` từ thư mục dữ liệu.
-- Giữ metadata nguồn, số trang (với PDF) và mã đoạn văn bản.
-- Chia tài liệu theo ký tự với hai chiến lược: `recursive` và `fixed`.
-- Tạo embedding bằng SentenceTransformers; hỗ trợ `paraphrase-multilingual-MiniLM-L12-v2` và `BAAI/bge-m3`.
-- Lưu và tìm kiếm vector bằng Qdrant local persistent.
-- Kiểm tra tính tương thích của collection với embedding model và số chiều vector.
-- Hạn chế index lại các đoạn không thay đổi.
-- Truy xuất Top-K, áp dụng ngưỡng điểm cấu hình được và trả về thông báo khi độ liên quan không đủ.
-- Có thể dùng Gemini API để tạo câu trả lời chỉ dựa trên ngữ cảnh đã truy xuất và trích dẫn theo chỉ số nguồn.
-- Ghi log ứng dụng vào `logs/app.log`; khóa API được đọc từ `.env`.
+## Thành phần đã triển khai
 
-> Ngưỡng điểm truy xuất chỉ là bước lọc ban đầu, không bảo đảm câu trả lời luôn đúng. Người học cần đối chiếu lại nguồn tài liệu, đặc biệt trước khi sử dụng trong bài thi hoặc bài tập quan trọng.
+- Nạp TXT, PDF có text extractable và DOCX; giữ metadata nguồn khi có.
+- Chunking fixed, recursive và structure-aware với chunk ID ổn định.
+- Embedding MiniLM/BGE-M3, kiểm tra dimension và persistence Qdrant.
+- Dense retrieval có Top-K, threshold, lọc metadata, xếp hạng ổn định và khử trùng lặp.
+- Context Builder chọn evidence theo token budget, không cắt nội dung làm hỏng citation.
+- Gemini RAG có prompt tiếng Việt grounded, citation mapping và xử lý lỗi API.
+- Qdrant Local mặc định; Docker và Cloud chỉ được dùng khi cấu hình backend rõ ràng.
+- Evaluation có Recall@K, Precision@K, MRR, nDCG@K, Hit@K và artifact đã lưu trong `results/`.
 
-## Quy trình RAG
+OCR, hybrid search, reranking, UI và API web chưa được triển khai.
 
-```text
-Tài liệu TXT / PDF / DOCX
-            ↓
-Nạp nội dung và metadata nguồn
-            ↓
-Chia đoạn văn bản (chunking theo ký tự)
-            ↓
-Tạo embedding và lưu Qdrant local
-            ↓
-Câu hỏi → embedding truy vấn → tìm Top-K đoạn liên quan
-            ↓
-Kiểm tra ngưỡng điểm
-            ↓
-Gemini tạo câu trả lời có căn cứ, hoặc thông báo thiếu thông tin
-```
+## Kiến trúc
 
-## Công nghệ sử dụng
+`Ingestion → Chunking → Embedding → Qdrant → Dense Retrieval → Context Builder → Gemini`
 
-| Thành phần | Công nghệ |
-| --- | --- |
-| Ngôn ngữ | Python |
-| Tải tài liệu | pypdf, python-docx |
-| Chia đoạn | LangChain Text Splitters |
-| Embedding | SentenceTransformers (MiniLM / BGE-M3) |
-| Cơ sở dữ liệu vector | Qdrant local persistent |
-| Mô hình sinh câu trả lời | Gemini API (tùy chọn) |
-| Cấu hình và biến môi trường | PyYAML, python-dotenv |
-
-## Cấu trúc dự án
-
-```text
-.
-├── data/                   # Tài liệu cần tra cứu
-├── src/
-│   ├── ingestion/          # Nạp TXT, PDF, DOCX và metadata
-│   ├── chunking/           # Chia đoạn theo ký tự
-│   ├── embeddings/         # Tạo và kiểm tra embedding
-│   ├── vectordb/           # Qdrant local persistent
-│   ├── retrieval/          # Truy xuất và kiểm tra ngưỡng điểm
-│   ├── utils/              # Logging và tiện ích dùng chung
-│   ├── config.py           # Đọc, hợp nhất và kiểm tra config.yaml
-│   └── pipeline.py         # Điều phối pipeline RAG
-├── tests/                  # Kiểm thử đơn vị
-├── config.yaml             # Cấu hình không nhạy cảm
-├── .env.example            # Mẫu biến môi trường
-├── main.py                 # Điểm chạy ứng dụng dòng lệnh
-└── requirements.txt        # Thư viện phụ thuộc
-```
+Chi tiết sơ đồ và các giới hạn nghiên cứu: [docs/architecture.md](docs/architecture.md).
 
 ## Cài đặt
 
-Yêu cầu: Python 3.11. Chạy tại thư mục gốc dự án trên Windows PowerShell:
+Môi trường phát triển hiện dùng Conda `ro-ai-rag` trên Windows:
 
 ```powershell
-py -3.11 -m venv .venv
-.\.venv\Scripts\Activate.ps1
-python -m pip install -r requirements.txt
+& "C:\Users\Lenovo\anaconda3\envs\ro-ai-rag\python.exe" -m pip check
 Copy-Item .env.example .env
 ```
 
-Lần chạy đầu tiên có thể cần kết nối Internet để tải embedding model. Không commit tệp `.env`.
+Không commit `.env`, API key, Qdrant Local storage hay dữ liệu học tập riêng tư. Chỉ cài dependency khi môi trường hiện có thiếu gói cần thiết:
 
-### Cấu hình
+```powershell
+& "C:\Users\Lenovo\anaconda3\envs\ro-ai-rag\python.exe" -m pip install -r requirements.txt
+```
 
-`config.yaml` là nguồn cấu hình không nhạy cảm cho chunking, truy xuất, model, Qdrant và logging. Mặc định hệ thống dùng:
+## Cấu hình
 
-- Chunking `recursive`, kích thước `700` ký tự và overlap `100` ký tự.
-- Embedding `sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2`.
-- Top-K là `5`, ngưỡng điểm là `0.5`.
-- Qdrant local tại `qdrant_storage/`, collection `rag_demo`.
+`config.yaml` là nguồn cấu hình không nhạy cảm. Biến bí mật đọc từ `.env` hoặc environment variables:
 
-Các biến `CHUNK_SIZE`, `CHUNK_OVERLAP`, `TOP_K`, `EMBED_MODEL` và `GEMINI_MODEL` trong `.env` có thể ghi đè giá trị tương ứng khi chạy CLI. Khi đổi embedding model, hãy dùng collection mới và index lại để tránh trộn vector khác số chiều hoặc khác model.
+- `GEMINI_API_KEY`, `GEMINI_MODEL`
+- `QDRANT_URL`, `QDRANT_API_KEY`
+- `EMBED_MODEL`, `CHUNK_SIZE`, `CHUNK_OVERLAP`, `TOP_K`
+
+Mặc định dùng Qdrant Local tại `qdrant_storage/`, collection `rag_demo`. Không đổi model trong một collection đã index.
+
+### Qdrant Docker
+
+```powershell
+docker compose up -d
+$env:QDRANT_URL = "http://localhost:6335"
+```
+
+Đặt `vectordb.backend: docker` trong `config.yaml`. Docker Compose dùng named volume `qdrant_docker_storage`; không tự di chuyển Local storage.
+
+### Qdrant Cloud
+
+Đặt endpoint HTTPS và API key trong `.env`, sau đó chọn backend Cloud:
+
+```env
+QDRANT_URL=https://your-cluster.cloud.qdrant.io
+QDRANT_API_KEY=your-api-key
+```
+
+```yaml
+vectordb:
+  backend: cloud
+  cloud_collection_name: ro_ai_handbook_cloud
+```
+
+Cloud dùng collection và metadata path riêng. Không upload tài liệu riêng tư nếu chưa được phép.
 
 ## Sử dụng
 
-1. Đặt tài liệu `.txt`, `.pdf` có text hoặc `.docx` vào thư mục `data/`.
-2. Chạy tra cứu không dùng LLM:
+Đặt tài liệu được phép sử dụng vào `data/`, rồi chạy retrieval không dùng LLM:
 
 ```powershell
-python main.py --no-llm --question "Sinh viên được mượn bao nhiêu quyển sách?"
+& "C:\Users\Lenovo\anaconda3\envs\ro-ai-rag\python.exe" main.py --no-llm --question "Sinh viên được mượn bao nhiêu quyển sách?"
 ```
 
-Lệnh hiển thị model, số chiều embedding, các đoạn tìm thấy cùng điểm số, nguồn và trang (nếu có). Nếu kết quả không đạt ngưỡng, hệ thống sẽ báo không tìm thấy đủ thông tin trong tài liệu được cung cấp.
-
-Để nhận câu trả lời từ Gemini dựa trên ngữ cảnh truy xuất, điền `GEMINI_API_KEY` hợp lệ trong `.env`, sau đó chạy:
+Chỉ gọi Gemini khi thêm `--gemini` và đã có `GEMINI_API_KEY`:
 
 ```powershell
-python main.py --question "Sinh viên được mượn bao nhiêu quyển sách?"
+& "C:\Users\Lenovo\anaconda3\envs\ro-ai-rag\python.exe" main.py --gemini --question "Sinh viên được mượn bao nhiêu quyển sách?"
 ```
 
-## Kiểm thử
+## Đánh giá và kiểm thử
 
-Chạy toàn bộ kiểm thử đơn vị:
+Chạy toàn bộ regression tests:
 
 ```powershell
-python -m unittest discover -s tests -v
+& "C:\Users\Lenovo\anaconda3\envs\ro-ai-rag\python.exe" -m unittest discover -s tests -v
 ```
 
-Các kiểm thử hiện có bao gồm cấu hình, nạp/chia tài liệu, embedding, retriever, vector store persistent, logging và khả năng tương thích của pipeline.
+Benchmark dùng run ID mới để không ghi đè artifact:
 
-## Hướng nghiên cứu và cải tiến tiếp theo
+```powershell
+& "C:\Users\Lenovo\anaconda3\envs\ro-ai-rag\python.exe" evaluate.py --run-id phase3-check-001
+```
 
-Những nội dung sau **chưa được tích hợp vào prototype hiện tại**:
+Kết quả benchmark hiện có chỉ phản ánh corpus minh họa và ground truth đã lưu; không đại diện cho quy định chính thức hay mọi tài liệu học tập. Xem methodology tại `docs/research/`.
 
-- OCR cho PDF scan và ảnh.
-- Hybrid Search và reranking.
-- Mở rộng đánh giá với bộ ground truth và quy trình đánh giá có kiểm soát.
-- Phát triển giao diện hoặc API phục vụ trải nghiệm sử dụng thực tế.
+## An toàn Git và dữ liệu
 
-## Lưu ý về dữ liệu và độ tin cậy
+- Kiểm tra `git status` trước khi stage thay đổi.
+- Không stage `.env`, Qdrant storage, log, temporary storage hoặc tài liệu không được phép chia sẻ.
+- Chỉ công bố repository/tài liệu khi đã kiểm tra quyền truy cập và thông tin cá nhân.
+- Không dùng force push, reset, prune hoặc xóa collection để xử lý xung đột lịch sử.
 
-- Chỉ PDF có thể trích xuất văn bản mới được xử lý; PDF scan chưa được OCR.
-- Tài liệu đầu vào là dữ liệu không tin cậy; không nên xem câu trả lời như nguồn thay thế tài liệu gốc.
-- `data/sample.txt` là dữ liệu minh họa, không phải quy định chính thức của nhà trường.
-- Không tự tạo nguồn hoặc metadata khi tài liệu không cung cấp thông tin đó.
+## Tài liệu nghiên cứu
+
+- [Kiến trúc](docs/architecture.md)
+- [Embedding Evaluation V2](docs/research/embedding_evaluation_v2.md)
+- [Retrieval baseline](docs/research/retrieval_evaluation_baseline.md)
+- [So sánh công nghệ](docs/research/technology_comparison.md)

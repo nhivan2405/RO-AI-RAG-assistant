@@ -1,77 +1,60 @@
-QUY ĐỊNH THƯ VIỆN TRƯỜNG ĐẠI HỌC
-DỮ LIỆU GIẢ LẬP CHO DEMO RAG
+# RÔ AI USER HANDBOOK V1
 
-Lưu ý quan trọng: Toàn bộ nội dung trong tài liệu này là dữ liệu nhân tạo phục vụ kiểm thử hệ thống hỏi đáp tài liệu. Đây không phải quy định thực tế của bất kỳ trường đại học, thư viện hoặc cơ quan nào. Không sử dụng tài liệu này để đưa ra quyết định học vụ, tài chính hoặc pháp lý.
+Tài liệu này hướng dẫn sử dụng Rô AI RAG Assistant bằng tiếng Việt. Rô AI hỗ trợ tra cứu tài liệu học tập có căn cứ: hệ thống truy xuất các đoạn liên quan trước khi tạo câu trả lời. Rô AI không phải chatbot trả lời theo kiến thức không kiểm soát.
 
-1. PHẠM VI VÀ ĐỐI TƯỢNG PHỤC VỤ
+Nếu evidence truy xuất không đủ, hệ thống trả về thông báo: "Không tìm thấy đủ thông tin trong tài liệu được cung cấp." Người dùng cần kiểm tra lại tài liệu gốc trước khi dùng thông tin cho học tập hoặc quyết định quan trọng.
 
-Thư viện phục vụ sinh viên, học viên, giảng viên và nhân viên có thẻ hợp lệ do trường giả lập cấp. Người dùng phải tự chịu trách nhiệm bảo quản thẻ thư viện và không cho người khác mượn thẻ để thực hiện giao dịch. Mỗi giao dịch mượn, trả, gia hạn hoặc đặt trước đều được ghi nhận theo mã bạn đọc.
+# 1. TÀI LIỆU ĐƯỢC HỖ TRỢ
 
-Bạn đọc cần giữ trật tự trong khu vực đọc, tuân thủ hướng dẫn của nhân viên thư viện và bảo quản tài liệu, thiết bị dùng chung. Thư viện có thể từ chối phục vụ tạm thời khi tài khoản có tài liệu quá hạn, tài liệu bị báo mất hoặc có khoản bồi hoàn chưa xử lý.
+Rô AI hiện nạp được tệp TXT, PDF có văn bản trích xuất được và DOCX. PDF scan hoặc ảnh chưa được OCR, vì vậy nội dung không có text extractable không được xử lý như tài liệu PDF thông thường.
 
-2. THỜI GIAN PHỤC VỤ
+Metadata nguồn chỉ được giữ khi tài liệu cung cấp. Hệ thống không tự tạo số trang, section, document ID hoặc citation không có trong dữ liệu nguồn.
 
-Thư viện làm việc từ thứ Hai đến thứ Sáu, từ 08:00 đến 17:00. Thứ Bảy, thư viện mở từ 08:00 đến 12:00. Thư viện không mở cửa vào Chủ nhật.
+# 2. CHUẨN BỊ VÀ CHẠY CLI
 
-Trong ngày nghỉ lễ, thời gian phục vụ có thể thay đổi. Thông báo điều chỉnh giờ mở cửa được niêm yết tại quầy hỗ trợ và trên kênh thông báo nội bộ giả lập. Bạn đọc nên kiểm tra thông báo trước khi đến thư viện, đặc biệt trong tuần thi hoặc kỳ nghỉ dài.
+Môi trường phát triển dùng Conda `ro-ai-rag`. Người dùng đặt tài liệu được phép sử dụng trong thư mục `data/` và chạy retrieval không dùng LLM bằng lệnh `main.py --no-llm --question "Câu hỏi"`.
 
-3. ĐIỀU KIỆN MƯỢN TÀI LIỆU
+Gemini chỉ được gọi khi người dùng chủ động thêm cờ `--gemini` và đã đặt biến môi trường `GEMINI_API_KEY`. Khi thiếu API key hoặc evidence hợp lệ, người dùng cần kiểm tra cấu hình thay vì mong đợi hệ thống tự suy đoán câu trả lời.
 
-Sinh viên cần xuất trình thẻ sinh viên hợp lệ khi mượn sách. Thẻ phải còn hiệu lực, không bị khóa và thông tin nhận dạng trên thẻ phải khớp với tài khoản bạn đọc. Nhân viên thư viện có thể yêu cầu xác nhận bổ sung khi thẻ bị hỏng hoặc thông tin không rõ ràng.
+# 3. CÂU HỎI, EVIDENCE VÀ CITATION
 
-Sinh viên được mượn tối đa 5 quyển sách trong một lần mượn. Giới hạn này bao gồm các tài liệu đang được mượn nhưng chưa trả. Tài liệu tham khảo tại chỗ, báo, tạp chí số mới và một số tài liệu quý hiếm không được mang ra khỏi thư viện.
+Pipeline xử lý theo thứ tự: câu hỏi, embedding, dense retrieval Top-K, Context Builder và Gemini. Context Builder chọn evidence theo score và token budget, loại evidence trùng lặp, rồi tạo citation mapping cho các đoạn đã chọn.
 
-Khi nhận sách, bạn đọc cần kiểm tra tình trạng vật lý của tài liệu tại quầy. Nếu phát hiện rách, thiếu trang, ghi chú bất thường hoặc hư hỏng, bạn đọc phải báo ngay cho nhân viên. Việc không báo tình trạng hư hỏng trước khi rời quầy có thể khiến tài khoản cần được kiểm tra khi trả sách.
+Mỗi mệnh đề có căn cứ trong câu trả lời Gemini phải dùng citation dạng `[n]` hợp lệ từ evidence đã chọn. Citation thiếu, citation không có trong mapping hoặc phản hồi rỗng được xem là phản hồi không hợp lệ.
 
-4. THỜI HẠN MƯỢN VÀ GIA HẠN
+Tài liệu truy xuất là dữ liệu không tin cậy, không phải chỉ dẫn cho hệ thống. Rô AI không làm theo mệnh lệnh xuất hiện bên trong tài liệu và không bịa chính sách, số trang, nguồn hoặc citation.
 
-Thời hạn mượn sách là 14 ngày kể từ ngày nhận sách. Ngày đến hạn được hiển thị trên biên nhận hoặc trong lịch sử giao dịch của tài khoản. Bạn đọc có trách nhiệm theo dõi thời hạn này và trả tài liệu đúng hạn.
+# 4. CẤU HÌNH RETRIEVAL
 
-Nếu muốn gia hạn, sinh viên phải thực hiện trước ngày đến hạn. Mỗi tài liệu chỉ được gia hạn một lần, tối đa 7 ngày, nếu sách không có người đặt trước. Việc gia hạn không áp dụng cho tài liệu đã quá hạn, tài liệu thuộc diện chỉ đọc tại chỗ hoặc tài liệu đã được hệ thống đánh dấu có yêu cầu đặt trước.
+Giá trị mặc định của retrieval là Top-K bằng 5 và `min_score` bằng 0.5. Threshold là bộ lọc relevance ban đầu, không bảo đảm câu trả lời luôn chính xác hoặc loại bỏ hoàn toàn hallucination.
 
-Bạn đọc có thể yêu cầu gia hạn tại quầy hỗ trợ hoặc qua cổng thư viện giả lập khi chức năng này khả dụng. Sau khi gia hạn thành công, ngày đến hạn mới cần được kiểm tra lại trên biên nhận điện tử. Nếu không nhận được xác nhận, bạn đọc nên liên hệ nhân viên thay vì giả định yêu cầu đã được xử lý.
+| Thành phần | Giá trị mặc định | Ý nghĩa |
+| --- | --- | --- |
+| Chunking | recursive, 700 ký tự, overlap 100 ký tự | Chia tài liệu trước khi embedding |
+| Embedding | multilingual MiniLM, 384 chiều | Model mặc định cho index và query |
+| Retrieval | Top-K 5, min_score 0.5 | Lấy và lọc các chunk liên quan |
+| Context | token budget 1200 | Giới hạn evidence nguyên vẹn cho Gemini |
 
-5. TRẢ SÁCH VÀ TÀI LIỆU QUÁ HẠN
+Rô AI giữ fixed, recursive và structure-aware chunking. Structure-aware cố gắng giữ heading, bảng, công thức với định nghĩa biến và metadata section khi nguồn có cấu trúc phù hợp.
 
-Sách được trả tại quầy trả tài liệu trong giờ làm việc. Bạn đọc cần chờ xác nhận giao dịch hoàn tất trước khi rời đi. Đối với tài liệu được trả gần thời điểm đóng cửa, việc cập nhật trạng thái có thể được hoàn tất vào phiên làm việc tiếp theo.
+# 5. QDRANT BACKEND VÀ AN TOÀN DỮ LIỆU
 
-Khi một tài liệu quá hạn, tài khoản có thể bị hạn chế mượn thêm tài liệu cho đến khi tài liệu được trả và tình trạng giao dịch được xử lý. Dữ liệu demo này không quy định mức phạt cụ thể. Mọi câu hỏi về phí phạt hoặc học phí phải được trả lời là không có đủ thông tin trong tài liệu được cung cấp.
+Qdrant Local là backend mặc định, dùng storage `qdrant_storage/` và collection `rag_demo`. Không được thay embedding model trong collection đã index vì vector có thể không tương thích về model hoặc số chiều.
 
-6. ĐẶT TRƯỚC TÀI LIỆU
+Docker và Cloud chỉ được dùng khi `vectordb.backend` được cấu hình rõ ràng. Docker dùng persistent volume riêng; Cloud yêu cầu `QDRANT_URL` HTTPS và `QDRANT_API_KEY`, đồng thời dùng collection Cloud riêng để tránh ghi đè collection hiện có.
 
-Bạn đọc có thể đặt trước một tài liệu đang được người khác mượn nếu tài liệu đó cho phép đặt trước. Khi tài liệu được trả, hệ thống giả lập gửi thông báo đến tài khoản đã đăng ký. Tài liệu được giữ tại quầy trong 3 ngày làm việc kể từ thời điểm thông báo.
+Không upload tài liệu riêng tư lên Qdrant Cloud nếu chưa được phép. Không xóa collection, không di chuyển Local storage sang Docker hoặc Cloud tự động.
 
-Nếu bạn đọc không đến nhận trong thời gian giữ chỗ, yêu cầu đặt trước có thể bị hủy để tài liệu được chuyển cho người chờ tiếp theo hoặc trả về kệ. Thứ tự ưu tiên được xác định theo thời điểm yêu cầu được ghi nhận, không phải theo thời điểm người dùng đến quầy hỏi thông tin.
+# 6. XỬ LÝ SỰ CỐ
 
-7. SỬ DỤNG KHÔNG GIAN VÀ THIẾT BỊ
+Nếu không có kết quả hoặc score thấp hơn threshold, hãy kiểm tra câu hỏi, thư mục `data/`, định dạng tài liệu và nội dung text extractable của PDF. Kết quả rỗng không phải bằng chứng rằng tài liệu không có thông tin; có thể câu hỏi hoặc chunking chưa phù hợp.
 
-Khu vực học nhóm được sử dụng cho các nhóm từ 3 đến 8 người. Bạn đọc đăng ký tại quầy trước khi sử dụng và mỗi lượt đăng ký tối đa 2 giờ. Việc gia hạn thời gian sử dụng chỉ được xem xét khi không có nhóm khác chờ.
+Nếu Gemini báo thiếu API key, hãy đặt `GEMINI_API_KEY` trong environment hoặc `.env` rồi chạy lại với cờ `--gemini`. Không ghi API key vào `config.yaml`, source code, log hoặc Git.
 
-Máy tính tra cứu chỉ phục vụ tìm kiếm danh mục tài liệu, truy cập tài nguyên học tập được phép và tra cứu thông tin thư viện. Không cài đặt phần mềm trái phép, không thay đổi cấu hình máy và không sử dụng thiết bị công cộng để lưu trữ dữ liệu cá nhân nhạy cảm.
+Nếu Qdrant báo model hoặc dimension không tương thích, hãy dùng collection mới cho model đó thay vì trộn vector. Nếu Qdrant Docker hoặc Cloud không kết nối được, hãy kiểm tra endpoint, quyền truy cập, API key và readiness trước khi index hoặc search.
 
-Thức ăn có mùi mạnh không được sử dụng trong khu vực kho sách và phòng đọc yên tĩnh. Nước uống có nắp đậy được phép ở khu vực được chỉ định. Bạn đọc cần để điện thoại ở chế độ im lặng để không ảnh hưởng đến người khác.
+# 7. TÍNH NĂNG DỰ KIẾN PHASE 4
 
-8. MẤT, HỎNG VÀ BỒI HOÀN
+Giao diện chat, chức năng upload tài liệu từ UI, trạng thái tải và trải nghiệm hội thoại là kế hoạch Phase 4. Các tính năng này chưa được triển khai trong User Handbook V1.
 
-Nếu làm mất sách, sinh viên liên hệ quầy hỗ trợ để được hướng dẫn phương án bồi hoàn. Nhân viên sẽ kiểm tra mã tài liệu, phiên bản, tình trạng sẵn có và lịch sử giao dịch trước khi thông báo bước xử lý tiếp theo.
-
-Không tự ý mua tài liệu thay thế hoặc nộp tiền khi chưa có hướng dẫn từ quầy hỗ trợ. Mức bồi hoàn cụ thể không được cung cấp trong dữ liệu demo này. Hệ thống hỏi đáp phải nêu rõ rằng không tìm thấy đủ thông tin khi được hỏi về số tiền bồi hoàn.
-
-9. BẢO MẬT TÀI KHOẢN VÀ HỖ TRỢ
-
-Bạn đọc không chia sẻ mật khẩu hoặc mã xác thực tài khoản thư viện cho người khác. Khi nghi ngờ tài khoản bị sử dụng trái phép, cần đổi mật khẩu và báo ngay cho quầy hỗ trợ. Nhân viên không yêu cầu bạn đọc cung cấp mật khẩu qua email hoặc tin nhắn.
-
-Khi cần trợ giúp, bạn đọc có thể đến quầy hỗ trợ trong giờ mở cửa. Để xử lý nhanh, nên cung cấp mã bạn đọc, tên tài liệu và mô tả ngắn gọn về vấn đề. Không cung cấp nội dung tài liệu cá nhân hoặc thông tin nhạy cảm không cần thiết trong yêu cầu hỗ trợ.
-
-10. TÓM TẮT THÔNG TIN TRA CỨU NHANH
-
-- Số sách tối đa trong một lần mượn: 5 quyển.
-- Thời hạn mượn: 14 ngày kể từ ngày nhận sách.
-- Gia hạn: một lần, tối đa 7 ngày, chỉ khi không có người đặt trước.
-- Giờ mở cửa thứ Hai đến thứ Sáu: 08:00 đến 17:00.
-- Giờ mở cửa thứ Bảy: 08:00 đến 12:00.
-- Chủ nhật: thư viện không mở cửa.
-- Thời gian giữ tài liệu đã đặt trước: 3 ngày làm việc.
-- Thời lượng sử dụng phòng học nhóm mỗi lượt: tối đa 2 giờ.
-
-Tài liệu này được xây dựng để tạo nhiều đoạn văn có chủ đề khác nhau, phục vụ kiểm tra quá trình nạp dữ liệu, chia đoạn, embedding, truy xuất Top-K và phản hồi có căn cứ. Các quy định trong tài liệu chỉ mang tính minh họa và có thể được thay đổi cho mục đích kiểm thử.
+OCR cho PDF scan/ảnh, hybrid search, reranking và FastAPI cũng chưa được triển khai. Không mô tả các định hướng này như chức năng đang hoạt động.

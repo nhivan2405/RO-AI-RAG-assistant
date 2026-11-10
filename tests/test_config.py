@@ -5,6 +5,7 @@ from pathlib import Path
 from src.config import load_config
 
 
+# Bảo vệ schema cấu hình và các backend hợp lệ.
 class ConfigTest(unittest.TestCase):
     def test_loads_defaults_for_missing_values(self):
         with tempfile.TemporaryDirectory() as directory:
@@ -19,6 +20,7 @@ class ConfigTest(unittest.TestCase):
         self.assertEqual(config["retrieval"]["min_score"], 0.5)
         self.assertEqual(config["vectordb"]["storage_path"], "qdrant_storage")
         self.assertEqual(config["vectordb"]["collection_name"], "rag_demo")
+        self.assertEqual(config["vectordb"]["backend"], "local")
         self.assertEqual(config["logging"]["level"], "INFO")
         self.assertEqual(config["logging"]["file"], "logs/app.log")
 
@@ -53,4 +55,30 @@ class ConfigTest(unittest.TestCase):
             path.write_text("logging:\n  level: INVALID\n", encoding="utf-8")
 
             with self.assertRaisesRegex(ValueError, "logging.level"):
+                load_config(path)
+
+    def test_accepts_docker_vector_backend(self):
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "config.yaml"
+            path.write_text("vectordb:\n  backend: docker\n", encoding="utf-8")
+
+            config = load_config(path)
+
+        self.assertEqual(config["vectordb"]["backend"], "docker")
+
+    def test_accepts_cloud_vector_backend(self):
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "config.yaml"
+            path.write_text("vectordb:\n  backend: cloud\n", encoding="utf-8")
+
+            config = load_config(path)
+
+        self.assertEqual(config["vectordb"]["backend"], "cloud")
+
+    def test_rejects_unknown_vector_backend(self):
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "config.yaml"
+            path.write_text("vectordb:\n  backend: invalid\n", encoding="utf-8")
+
+            with self.assertRaisesRegex(ValueError, "vectordb.backend"):
                 load_config(path)

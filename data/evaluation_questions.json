@@ -1,11 +1,68 @@
 [
-  {"id": "borrow-limit", "type": "ground_truth", "category": "numerical_values", "question": "Sinh viên được mượn tối đa bao nhiêu quyển sách trong một lần mượn?", "expected_anchor": "Sinh viên được mượn tối đa 5 quyển sách trong một lần mượn."},
-  {"id": "loan-period", "type": "ground_truth", "category": "regulations", "question": "Thời hạn mượn sách được tính như thế nào?", "expected_anchor": "Thời hạn mượn sách là 14 ngày kể từ ngày nhận sách."},
-  {"id": "renewal-condition", "type": "ground_truth", "category": "regulations", "question": "Một tài liệu được gia hạn bao nhiêu lần và tối đa bao lâu?", "expected_anchor": "Mỗi tài liệu chỉ được gia hạn một lần, tối đa 7 ngày, nếu sách không có người đặt trước."},
-  {"id": "saturday-hours", "type": "ground_truth", "category": "numerical_values", "question": "Thư viện mở cửa thứ Bảy trong khung giờ nào?", "expected_anchor": "Thứ Bảy, thư viện mở từ 08:00 đến 12:00."},
-  {"id": "reservation-hold", "type": "ground_truth", "category": "regulations", "question": "Tài liệu đặt trước được giữ trong bao lâu?", "expected_anchor": "Tài liệu được giữ tại quầy trong 3 ngày làm việc kể từ thời điểm thông báo."},
-  {"id": "study-room-duration", "type": "ground_truth", "category": "multi_step_reasoning", "question": "Mỗi lượt sử dụng khu vực học nhóm tối đa bao lâu?", "expected_anchor": "mỗi lượt đăng ký tối đa 2 giờ."},
-  {"id": "exam-schedule", "type": "out_of_scope", "category": "out_of_scope", "question": "Lịch thi cuối kỳ môn Cấu trúc dữ liệu là ngày nào?"},
-  {"id": "tuition-fee", "type": "out_of_scope", "category": "out_of_scope", "question": "Học phí học kỳ này là bao nhiêu?"},
-  {"id": "dormitory-fee", "type": "out_of_scope", "category": "out_of_scope", "question": "Phí ở ký túc xá mỗi tháng là bao nhiêu?"}
+  {
+    "id": "supported-document-formats",
+    "type": "ground_truth",
+    "category": "regulations",
+    "question": "Rô AI hiện hỗ trợ những định dạng tài liệu nào?",
+    "expected_anchor": "Rô AI hiện nạp được tệp TXT, PDF có văn bản trích xuất được và DOCX.",
+    "relevant_chunk_ids": ["sample.txt:pNone:c1"]
+  },
+  {
+    "id": "citation-validation",
+    "type": "ground_truth",
+    "category": "regulations",
+    "question": "Citation nào được xem là hợp lệ trong câu trả lời Gemini?",
+    "expected_anchor": "Citation thiếu, citation không có trong mapping hoặc phản hồi rỗng được xem là phản hồi không hợp lệ.",
+    "relevant_chunk_ids": ["sample.txt:pNone:c3"]
+  },
+  {
+    "id": "retrieval-defaults",
+    "type": "ground_truth",
+    "category": "numerical_values",
+    "question": "Top-K và min_score mặc định của retrieval là bao nhiêu?",
+    "expected_anchor": "Giá trị mặc định của retrieval là Top-K bằng 5 và `min_score` bằng 0.5.",
+    "relevant_chunk_ids": ["sample.txt:pNone:c4"]
+  },
+  {
+    "id": "configuration-table",
+    "type": "ground_truth",
+    "category": "tables",
+    "question": "Bảng cấu hình ghi gì về Context?",
+    "expected_anchor": "| Context | token budget 1200 | Giới hạn evidence nguyên vẹn cho Gemini |",
+    "relevant_chunk_ids": ["sample.txt:pNone:c4"]
+  },
+  {
+    "id": "formula-preservation",
+    "type": "ground_truth",
+    "category": "formulas",
+    "question": "Structure-aware chunking cố gắng giữ thông tin nào khi nguồn có cấu trúc phù hợp?",
+    "expected_anchor": "Structure-aware cố gắng giữ heading, bảng, công thức với định nghĩa biến và metadata section khi nguồn có cấu trúc phù hợp.",
+    "relevant_chunk_ids": ["sample.txt:pNone:c4"]
+  },
+  {
+    "id": "dimension-troubleshooting",
+    "type": "ground_truth",
+    "category": "multi_step_reasoning",
+    "question": "Khi Qdrant báo model hoặc dimension không tương thích, cần xử lý như thế nào?",
+    "expected_anchor": "Nếu Qdrant báo model hoặc dimension không tương thích, hãy dùng collection mới cho model đó thay vì trộn vector.",
+    "relevant_chunk_ids": ["sample.txt:pNone:c7"]
+  },
+  {
+    "id": "exam-schedule",
+    "type": "out_of_scope",
+    "category": "out_of_scope",
+    "question": "Lịch thi cuối kỳ môn Cấu trúc dữ liệu là ngày nào?"
+  },
+  {
+    "id": "tuition-fee",
+    "type": "out_of_scope",
+    "category": "out_of_scope",
+    "question": "Học phí học kỳ này là bao nhiêu?"
+  },
+  {
+    "id": "dormitory-fee",
+    "type": "out_of_scope",
+    "category": "out_of_scope",
+    "question": "Phí ở ký túc xá mỗi tháng là bao nhiêu?"
+  }
 ]

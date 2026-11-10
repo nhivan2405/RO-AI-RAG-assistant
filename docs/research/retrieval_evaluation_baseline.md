@@ -29,15 +29,14 @@ Các chỉ số không đo chất lượng Gemini, tính đúng đắn học thu
 ## Chạy và lưu kết quả
 
 ```powershell
-python -m pip install -r requirements.txt
-python evaluate.py
+& "C:\Users\Lenovo\anaconda3\envs\ro-ai-rag\python.exe" evaluate.py --run-id baseline-v2-004
 ```
 
 Lệnh in `hit_at_5`, `mrr` và ghi thứ hạng, `chunk_id`, quyết định ngoài phạm vi vào `results/retrieval_baseline_results.json`.
 
-## Kết quả hiện tại
+## Kết quả đã lưu
 
-Chưa có số liệu runtime: môi trường hiện tại thiếu dependency, nên chưa thể tải MiniLM, build index Qdrant hoặc tạo kết quả mà không bịa số liệu. Chạy lệnh trên trong môi trường đã cài dependency để tạo artifact có thể kiểm tra.
+`results/retrieval_baseline_results.json` lưu baseline trên corpus minh họa: `Hit@5 = 1.0`, `MRR = 0.9167`. Đây là kết quả của sáu câu ground truth trong `data/sample.txt`, không phải đánh giá trên Student Handbook thực tế.
 
 ## Giới hạn
 

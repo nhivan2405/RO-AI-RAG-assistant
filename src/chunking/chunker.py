@@ -46,6 +46,7 @@ def chunk_documents(
     chunks: list[Chunk] = []
     for source, page, text in documents:
         if strategy == "structure_aware":
+            # Chiến lược này giữ section và lý do tách để phục vụ citation/evaluation.
             chunks.extend(_chunk_structure_aware(source, page, text, chunk_size, chunk_overlap))
         else:
             split_text = _build_splitter(chunk_size, chunk_overlap, strategy)
@@ -185,6 +186,7 @@ def _pack_section(
             if current:
                 parts.append((prefix + "\n\n".join(current), section, None))
                 current, current_length = [], 0
+            # Lặp lại header giúp mỗi phần bảng vẫn tự diễn giải được.
             parts.extend(_split_oversized_table(unit, section, chunk_size, chunk_overlap))
             continue
         if len(unit) > available_size:
@@ -224,6 +226,7 @@ def _combine_formula_with_definitions(units: list[str]) -> list[str]:
             and index + 1 < len(units)
             and _looks_like_definition(units[index + 1])
         ):
+            # Gộp định nghĩa ngay sau công thức để không mất ngữ nghĩa biến số.
             combined.append(f"{unit}\n\n{units[index + 1]}")
             index += 2
         else:

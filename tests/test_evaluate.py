@@ -32,6 +32,7 @@ class ClosableFakeIndex(FakeIndex):
         self.closed = True
 
 
+# Kiểm tra metric và lifecycle storage benchmark tách biệt.
 class RetrievalEvaluationTest(unittest.TestCase):
     def test_anchor_format_remains_backward_compatible(self):
         hits = [

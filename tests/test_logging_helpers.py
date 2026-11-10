@@ -1,7 +1,5 @@
 import logging
-import sys
 import tempfile
-import types
 import unittest
 from pathlib import Path
 from unittest.mock import patch
@@ -13,6 +11,7 @@ from src.utils.helpers import APP_LOGGER_NAME, setup_logging
 from src.vectordb.vector_store import PersistentVectorStore
 
 
+# Đảm bảo log chẩn đoán không vô tình ghi câu hỏi hoặc khóa bí mật.
 class LoggingHelpersTest(unittest.TestCase):
     def tearDown(self):
         self._close_log_handlers()
@@ -53,7 +52,7 @@ class LoggingHelpersTest(unittest.TestCase):
             raw_question = "CÂU_HỎI_BÍ_MẬT"
             fake_key = "API_KEY_BÍ_MẬT"
 
-            with patch("src.pipeline.os.getenv", return_value=None):
+            with patch("src.llm.gemini.os.getenv", return_value=None):
                 with self.assertRaisesRegex(RuntimeError, "GEMINI_API_KEY"):
                     answer_with_gemini(raw_question, [])
 
@@ -103,7 +102,7 @@ class LoggingHelpersTest(unittest.TestCase):
             setup_logging({"logging": {"level": "INFO", "file": str(log_path)}})
 
             with patch(
-                "src.vectordb.vector_store.QdrantClient",
+                "src.vectordb.connection.QdrantClient",
                 side_effect=OSError("storage unavailable"),
             ):
                 with self.assertRaises(OSError):
@@ -121,48 +120,26 @@ class LoggingHelpersTest(unittest.TestCase):
         self.assertNotIn("storage unavailable", content)
 
     def test_gemini_api_failure_is_logged_without_question_or_key(self):
-        class FakeApiError(Exception):
-            pass
-
         with tempfile.TemporaryDirectory() as directory:
             log_path = Path(directory) / "app.log"
             setup_logging({"logging": {"level": "INFO", "file": str(log_path)}})
-            fake_errors = types.ModuleType("google.genai.errors")
-            fake_errors.APIError = FakeApiError
-            fake_genai = types.ModuleType("google.genai")
-            fake_genai.errors = fake_errors
-            fake_genai.Client = lambda api_key: types.SimpleNamespace(
-                models=types.SimpleNamespace(
-                    generate_content=lambda **kwargs: (_ for _ in ()).throw(
-                        FakeApiError("remote detail")
-                    )
-                )
-            )
-            fake_google = types.ModuleType("google")
-            fake_google.genai = fake_genai
             raw_question = "CÂU_HỎI_KHÔNG_ĐƯỢC_LOG"
             fake_key = "KHÓA_KHÔNG_ĐƯỢC_LOG"
 
-            with patch.dict(
-                sys.modules,
-                {
-                    "google": fake_google,
-                    "google.genai": fake_genai,
-                    "google.genai.errors": fake_errors,
-                },
-            ), patch("src.pipeline.load_config") as load_config_mock, patch(
-                "src.pipeline.os.getenv",
-                side_effect=lambda key, default=None: fake_key
-                if key == "GEMINI_API_KEY"
-                else default,
+            with patch("src.pipeline.load_config") as load_config_mock, patch(
+                "src.pipeline.generate_grounded_answer",
+                side_effect=RuntimeError("Gemini request failed"),
             ):
                 load_config_mock.return_value = {"models": {"gemini": "gemini-test"}}
                 with self.assertRaisesRegex(RuntimeError, "Gemini request failed"):
-                    answer_with_gemini(raw_question, [])
+                    answer_with_gemini(
+                        raw_question,
+                        [{"score": 0.9, "text": "Evidence", "chunk_id": "test:c0"}],
+                    )
 
             content = log_path.read_text(encoding="utf-8")
             self._close_log_handlers()
 
-        self.assertIn("gemini_api_request_failed", content)
+        self.assertIn("legacy_gemini_request_failed", content)
         self.assertNotIn(raw_question, content)
         self.assertNotIn(fake_key, content)

@@ -21,6 +21,7 @@ class Embedder:
 
     def __init__(self, model_name: str, model: SentenceTransformer | None = None) -> None:
         self.model_name = model_name
+        # Cố định dimension theo model để tránh trộn vector không tương thích.
         self.expected_dimension = _get_expected_dimension(model_name)
         self._model = model or self._initialize_model(model_name)
         self.dimension: int | None = None
@@ -62,6 +63,7 @@ class Embedder:
                 f"Model '{self.model_name}' returned dimension {array.shape[1]}; "
                 f"expected {self.expected_dimension}"
             )
+        # NaN hoặc infinity sẽ làm cosine similarity không còn đáng tin cậy.
         if not np.isfinite(array).all():
             raise ValueError("Embedding model returned non-finite vector values")
 

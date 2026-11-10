@@ -31,9 +31,11 @@ def answer_with_rag(
     timeout_seconds: int = 30,
 ) -> RagAnswer:
     """Tạo câu trả lời grounded hoặc fallback khi evidence không đủ."""
+    # Cho phép test hoặc caller truyền hit đã truy xuất để không search hai lần.
     if hits is None:
         hits = index.search(question, top_k=top_k, min_score=min_score)
     context = build_context(hits, token_budget=token_budget)
+    # Không gọi LLM khi retrieval không tạo được evidence hợp lệ.
     if not context.text:
         return RagAnswer(FALLBACK_MESSAGE, (), False)
     answer = generate_grounded_answer(

@@ -34,6 +34,7 @@ def load_documents(folder: str = "data") -> list[DocumentRecord]:
     for path in paths:
         if not path.is_file():
             continue
+        # Dừng rõ ràng để không index một corpus chỉ được nạp một phần.
         try:
             documents.extend(_load_document(path))
         except (OSError, UnicodeError, ValueError, BadZipFile, PdfReadError) as error:
@@ -85,6 +86,7 @@ def _iter_docx_blocks(document: Document) -> list[str]:
     paragraphs = {paragraph._p: paragraph for paragraph in document.paragraphs}
     tables = {table._tbl: table for table in document.tables}
     blocks: list[str] = []
+    # Duyệt XML body để paragraph và table không bị tách thành hai nhóm.
     for element in document.element.body.iterchildren():
         if element in paragraphs:
             text = _format_docx_paragraph(paragraphs[element])

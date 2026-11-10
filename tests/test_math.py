@@ -1,5 +1,6 @@
 import unittest
 from src.pipeline import cosine_manual,make_chunks
+# Giữ các ví dụ toán học và API chunking cũ hoạt động.
 class MathTest(unittest.TestCase):
     def test_cosine_equal(self):self.assertAlmostEqual(cosine_manual([1,2],[2,4]),1.0)
     def test_cosine_orthogonal(self):self.assertAlmostEqual(cosine_manual([1,0],[0,1]),0.0)

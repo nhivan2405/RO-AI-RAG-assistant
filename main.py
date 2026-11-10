@@ -60,6 +60,7 @@ def main() -> None:
             f"[{position}] score={hit['score']:.4f} source={hit['source']} "
             f"page={hit['page']} | {hit['text'][:200]}"
         )
+    # Gemini chỉ chạy khi người dùng chủ động bật cờ để tránh gọi API ngoài ý muốn.
     if args.no_llm or not args.gemini:
         _print_retrieval_diagnostic(hits, retriever, is_answerable)
         if not is_answerable:

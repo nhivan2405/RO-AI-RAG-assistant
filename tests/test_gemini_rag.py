@@ -15,6 +15,7 @@ class FakeIndex:
         self.search = Mock(return_value=hits)
 
 
+# Mô phỏng Gemini để kiểm tra grounded flow không cần API key thật.
 class GeminiRagTest(unittest.TestCase):
     def setUp(self):
         self.hits = [

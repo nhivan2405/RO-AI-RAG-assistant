@@ -41,6 +41,7 @@ class Retriever:
         """Lọc score, ổn định thứ hạng và loại chunk trùng lặp."""
         if top_k is not None and top_k <= 0:
             return []
+        # Sắp xếp thêm chunk_id giúp kết quả ổn định khi score bằng nhau.
         ranked = sorted(
             hits,
             key=lambda hit: (-float(hit["score"]), str(hit.get("chunk_id", ""))),

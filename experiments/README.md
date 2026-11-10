@@ -4,6 +4,6 @@ Hiện các script có sẵn nằm tại **thư mục gốc** để dễ chạy 
 
 - `cosine_demo.py`: minh họa cosine similarity.
 - `compare_chunking.py`: so sánh số lượng/độ dài chunks (không phải Recall@K).
-- `evaluate.py`: thử nghiệm quy trình đánh giá trên dữ liệu tổng hợp, chưa thay thế benchmark chuẩn.
+- `evaluate.py`: benchmark retrieval với ground truth, metrics và output JSON/CSV tách biệt theo run ID.
 
-Khi có ground truth đủ lớn, bổ sung scripts và ghi lại phiên bản model, chunk_size, overlap, top_k, metric.
+Corpus hiện tại là dữ liệu minh họa. Khi có ground truth đại diện hơn, giữ nguyên corpus, query set, chunking và retrieval parameters cho mỗi lần so sánh.

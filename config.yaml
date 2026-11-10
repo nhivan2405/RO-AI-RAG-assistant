@@ -12,8 +12,13 @@ models:
   gemini: gemini-2.5-flash
 
 vectordb:
+  backend: local
   storage_path: qdrant_storage
   collection_name: rag_demo
+  url: http://localhost:6333
+  metadata_path: qdrant_docker_metadata
+  cloud_metadata_path: qdrant_cloud_metadata
+  cloud_collection_name: rag_cloud
 
 logging:
   level: INFO

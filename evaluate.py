@@ -115,6 +115,7 @@ def evaluate_queries(
     ground_truth_results: list[dict[str, Any]] = []
     out_of_scope_results: list[dict[str, Any]] = []
 
+    # Giữ out-of-scope tách khỏi metric relevance để không làm sai Recall/MRR.
     for item in questions:
         hits = index.search(item["question"], top_k)
         hit_ids = [str(hit.get("chunk_id")) for hit in hits]
@@ -355,6 +356,7 @@ def main() -> None:
     results: dict[str, Any] = {"run_id": args.run_id, "models": []}
     for model_name in models:
         collection = _collection_name(args.collection_prefix, args.run_id, model_name)
+        # Mỗi model dùng storage riêng để không khóa hoặc trộn vector benchmark.
         storage_path = _evaluation_storage_path(
             Path(args.storage_path), args.run_id, model_name
         )

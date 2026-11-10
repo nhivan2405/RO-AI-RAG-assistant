@@ -6,6 +6,7 @@ import main as application
 from src.retrieval.retriever import FALLBACK_MESSAGE, Retriever
 
 
+# Kiểm tra ngưỡng, dedupe và CLI không gọi LLM ngoài ý muốn.
 class RetrieverTest(unittest.TestCase):
     def setUp(self):
         self.retriever = Retriever(min_score=0.5)
@@ -38,7 +39,7 @@ class RetrieverTest(unittest.TestCase):
         self.assertEqual(self.retriever.filter_hits([], top_k=5), [])
         self.assertEqual(self.retriever.filter_hits([{"score": 0.9}], top_k=0), [])
 
-    @patch("main.answer_with_gemini")
+    @patch("main.answer_with_rag")
     @patch("main.RagIndex")
     @patch("main.chunk_documents")
     @patch("main.load_documents")
@@ -51,7 +52,7 @@ class RetrieverTest(unittest.TestCase):
         load_documents_mock,
         chunk_documents_mock,
         rag_index_class,
-        answer_with_gemini_mock,
+        answer_with_rag_mock,
     ):
         self._configure_cli_mocks(
             load_config_mock,
@@ -62,10 +63,10 @@ class RetrieverTest(unittest.TestCase):
         with patch.object(sys, "argv", ["main.py"]), patch("builtins.print") as print_mock:
             application.main()
 
-        answer_with_gemini_mock.assert_not_called()
+        answer_with_rag_mock.assert_not_called()
         self.assertIn(FALLBACK_MESSAGE, str(print_mock.call_args_list))
 
-    @patch("main.answer_with_gemini", return_value="Câu trả lời có căn cứ")
+    @patch("main.answer_with_rag")
     @patch("main.RagIndex")
     @patch("main.chunk_documents")
     @patch("main.load_documents")
@@ -78,7 +79,7 @@ class RetrieverTest(unittest.TestCase):
         load_documents_mock,
         chunk_documents_mock,
         rag_index_class,
-        answer_with_gemini_mock,
+        answer_with_rag_mock,
     ):
         hits = [
             {
@@ -98,14 +99,15 @@ class RetrieverTest(unittest.TestCase):
         ]
         self._configure_cli_mocks(load_config_mock, rag_index_class, hits=hits)
 
-        with patch.object(sys, "argv", ["main.py"]), patch("builtins.print"):
+        with patch.object(sys, "argv", ["main.py", "--gemini"]), patch("builtins.print"):
             application.main()
 
-        answer_with_gemini_mock.assert_called_once_with(
-            "Sinh viên được mượn bao nhiêu quyển sách?", hits
-        )
+        answer_with_rag_mock.assert_called_once()
+        self.assertEqual(answer_with_rag_mock.call_args.args[0], "Sinh viên được mượn bao nhiêu quyển sách?")
+        self.assertIs(answer_with_rag_mock.call_args.args[1], rag_index_class.return_value)
+        self.assertEqual(answer_with_rag_mock.call_args.kwargs["hits"], hits)
 
-    @patch("main.answer_with_gemini")
+    @patch("main.answer_with_rag")
     @patch("main.RagIndex")
     @patch("main.chunk_documents")
     @patch("main.load_documents")
@@ -118,7 +120,7 @@ class RetrieverTest(unittest.TestCase):
         load_documents_mock,
         chunk_documents_mock,
         rag_index_class,
-        answer_with_gemini_mock,
+        answer_with_rag_mock,
     ):
         self._configure_cli_mocks(
             load_config_mock,
@@ -132,13 +134,13 @@ class RetrieverTest(unittest.TestCase):
             application.main()
 
         output = str(print_mock.call_args_list)
-        answer_with_gemini_mock.assert_not_called()
+        answer_with_rag_mock.assert_not_called()
         self.assertIn("Retrieval decision: REJECTED", output)
         self.assertIn("top_score=0.4900", output)
         self.assertIn("min_score=0.5000", output)
         self.assertIn(FALLBACK_MESSAGE, output)
 
-    @patch("main.answer_with_gemini")
+    @patch("main.answer_with_rag")
     @patch("main.RagIndex")
     @patch("main.chunk_documents")
     @patch("main.load_documents")
@@ -151,7 +153,7 @@ class RetrieverTest(unittest.TestCase):
         load_documents_mock,
         chunk_documents_mock,
         rag_index_class,
-        answer_with_gemini_mock,
+        answer_with_rag_mock,
     ):
         self._configure_cli_mocks(load_config_mock, rag_index_class, hits=[])
 
@@ -161,12 +163,12 @@ class RetrieverTest(unittest.TestCase):
             application.main()
 
         output = str(print_mock.call_args_list)
-        answer_with_gemini_mock.assert_not_called()
+        answer_with_rag_mock.assert_not_called()
         self.assertIn("Retrieval decision: REJECTED", output)
         self.assertIn("top_score=N/A", output)
         self.assertIn(FALLBACK_MESSAGE, output)
 
-    @patch("main.answer_with_gemini")
+    @patch("main.answer_with_rag")
     @patch("main.RagIndex")
     @patch("main.chunk_documents")
     @patch("main.load_documents")
@@ -179,7 +181,7 @@ class RetrieverTest(unittest.TestCase):
         load_documents_mock,
         chunk_documents_mock,
         rag_index_class,
-        answer_with_gemini_mock,
+        answer_with_rag_mock,
     ):
         self._configure_cli_mocks(
             load_config_mock,
@@ -193,7 +195,7 @@ class RetrieverTest(unittest.TestCase):
             application.main()
 
         output = str(print_mock.call_args_list)
-        answer_with_gemini_mock.assert_not_called()
+        answer_with_rag_mock.assert_not_called()
         self.assertIn("[1] score=0.8000 source=a.txt page=1 | Đủ", output)
         self.assertIn("Retrieval decision: ACCEPTED", output)
         self.assertIn("top_score=0.8000", output)
@@ -207,6 +209,9 @@ class RetrieverTest(unittest.TestCase):
                 "strategy": "recursive",
             },
             "retrieval": {"top_k": 5, "min_score": 0.5},
+            "prompts": {"context_token_budget": 1200},
+            "models": {"gemini": "gemini-test"},
+            "llm": {"timeout_seconds": 30},
         }
         index = rag_index_class.return_value
         index.model_name = "mock-model"

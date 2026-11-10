@@ -88,6 +88,7 @@ def main() -> None:
     documents = load_documents("data")
     rows: list[dict[str, Any]] = []
 
+    # Dùng cùng corpus và tham số để so sánh cấu trúc giữa các chiến lược.
     for strategy in STRATEGIES:
         chunks = chunk_documents(
             documents,

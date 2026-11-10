@@ -6,6 +6,7 @@ import numpy as np
 from src.embeddings.embedder import Embedder, MODEL_DIMENSIONS
 
 
+# Bảo vệ dimension và cách chuẩn hóa dùng chung cho index/query.
 class EmbedderTest(unittest.TestCase):
     def test_embed_texts_for_supported_models(self):
         for model_name, dimension in MODEL_DIMENSIONS.items():

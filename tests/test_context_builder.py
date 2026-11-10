@@ -7,6 +7,7 @@ from src.prompts.context_builder import build_context
 from src.vectordb.vector_store import PersistentVectorStore
 
 
+# Kiểm tra evidence nguyên vẹn và citation mapping từ hit thật.
 class ContextBuilderTest(unittest.TestCase):
     def test_orders_evidence_by_score_and_maps_citations(self):
         hits = [

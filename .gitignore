@@ -4,6 +4,7 @@ __pycache__/
 .venv/
 venv/
 .pytest_cache/
+.chunking_test_temp/
 # Local secrets
 .env
 .env.*
@@ -13,6 +14,8 @@ venv/
 data/private/
 data/uploads/
 qdrant_storage/
+qdrant_docker_metadata/
+qdrant_cloud_metadata/
 *.sqlite
 *.db
 # Editor and OS

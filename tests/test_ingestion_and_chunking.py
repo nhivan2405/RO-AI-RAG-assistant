@@ -8,6 +8,7 @@ from src.chunking.chunker import chunk_documents, make_chunks
 from src.ingestion.loader import load_documents
 
 
+# Bảo vệ metadata và các trường hợp cấu trúc học liệu dễ bị tách sai.
 class IngestionAndChunkingTest(unittest.TestCase):
     def test_loads_text_and_docx_with_source_metadata(self):
         with tempfile.TemporaryDirectory() as directory:

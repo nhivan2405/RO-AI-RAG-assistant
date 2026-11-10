@@ -38,6 +38,7 @@ def _get_logging_config(config: Mapping[str, Any] | None) -> Mapping[str, str]:
 
 def _configure_file_handler(logger: logging.Logger, log_path: Path) -> None:
     resolved_path = log_path.resolve()
+    # Tái sử dụng handler cùng đường dẫn để tránh ghi log lặp mỗi lần khởi tạo.
     for handler in logger.handlers:
         if isinstance(handler, logging.FileHandler) and Path(handler.baseFilename) == resolved_path:
             return

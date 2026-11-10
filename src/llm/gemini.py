@@ -39,17 +39,18 @@ def generate_grounded_answer(
     timeout_seconds: int = 30,
 ) -> str:
     """Gọi Gemini và kiểm tra citation do model trả về."""
-    if not context.text or not context.citations:
-        raise ValueError("Context must contain valid evidence")
     key = api_key or os.getenv("GEMINI_API_KEY")
     if not key or key == "YOUR_API_KEY_HERE":
         logger.warning("gemini_api_key_missing")
         raise RuntimeError("Set GEMINI_API_KEY before running the Gemini demo")
+    if not context.text or not context.citations:
+        raise ValueError("Context must contain valid evidence")
     try:
         if client is None:
             from google import genai
             from google.genai import types
 
+            # Timeout tách khỏi prompt để lỗi mạng không làm treo CLI.
             client = genai.Client(
                 api_key=key,
                 http_options=types.HttpOptions(timeout=timeout_seconds * 1000),
@@ -72,6 +73,7 @@ def _validate_citations(answer: str, citations: Sequence[Citation]) -> None:
     if answer == FALLBACK_MESSAGE:
         return
     citation_ids = {citation.citation_id for citation in citations}
+    # Chỉ chấp nhận citation đã được Context Builder cấp cho evidence này.
     used_ids = {int(value) for value in re.findall(r"\[(\d+)\]", answer)}
     if not used_ids or not used_ids.issubset(citation_ids):
         raise ValueError("Gemini returned missing or invalid citations")
