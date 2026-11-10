@@ -22,6 +22,9 @@ logging:
 prompts:
   context_token_budget: 1200
 
+llm:
+  timeout_seconds: 30
+
 evaluation:
   embedding_models:
     - sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2

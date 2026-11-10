@@ -5,7 +5,8 @@ from dotenv import load_dotenv
 
 from src.chunking.chunker import chunk_documents
 from src.config import load_config
-from src.pipeline import RagIndex, answer_with_gemini, load_documents
+from src.llm.rag_service import answer_with_rag
+from src.pipeline import RagIndex, load_documents
 from src.retrieval.retriever import FALLBACK_MESSAGE, Retriever
 from src.utils.helpers import get_logger, setup_logging
 
@@ -25,6 +26,7 @@ def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--question", default="Sinh viên được mượn bao nhiêu quyển sách?")
     parser.add_argument("--no-llm", action="store_true", help="retrieval only; no Gemini API")
+    parser.add_argument("--gemini", action="store_true", help="call Gemini with grounded evidence")
     parser.add_argument("--data", default="data")
     args = parser.parse_args()
     config = load_config()
@@ -58,7 +60,7 @@ def main() -> None:
             f"[{position}] score={hit['score']:.4f} source={hit['source']} "
             f"page={hit['page']} | {hit['text'][:200]}"
         )
-    if args.no_llm:
+    if args.no_llm or not args.gemini:
         _print_retrieval_diagnostic(hits, retriever, is_answerable)
         if not is_answerable:
             print("\nRETRIEVAL FALLBACK:\n", FALLBACK_MESSAGE)
@@ -66,12 +68,21 @@ def main() -> None:
 
     if is_answerable:
         try:
-            answer = answer_with_gemini(args.question, hits)
+            result = answer_with_rag(
+                args.question,
+                index,
+                top_k=top_k,
+                min_score=config["retrieval"]["min_score"],
+                token_budget=config["prompts"]["context_token_budget"],
+                model_name=os.getenv("GEMINI_MODEL", config["models"]["gemini"]),
+                hits=hits,
+                timeout_seconds=config["llm"]["timeout_seconds"],
+            )
         except RuntimeError as error:
             logger.error("gemini_answer_failed error_type=%s", type(error).__name__)
             print(f"ERROR: {error}")
             return
-        print("\nGEMINI ANSWER:\n", answer)
+        print("\nGEMINI ANSWER:\n", result.answer)
     else:
         print("\nGEMINI ANSWER:\n", FALLBACK_MESSAGE)
 

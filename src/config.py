@@ -26,6 +26,7 @@ DEFAULT_CONFIG: dict[str, dict[str, Any]] = {
     },
     "logging": {"level": "INFO", "file": "logs/app.log"},
     "prompts": {"context_token_budget": 1200},
+    "llm": {"timeout_seconds": 30},
     "evaluation": {
         "embedding_models": [
             "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2"
@@ -115,6 +116,10 @@ def _validate_config(config: dict[str, dict[str, Any]]) -> None:
         or context_token_budget <= 0
     ):
         raise ValueError("prompts.context_token_budget must be a positive integer")
+
+    timeout_seconds = config["llm"]["timeout_seconds"]
+    if not isinstance(timeout_seconds, int) or isinstance(timeout_seconds, bool) or timeout_seconds <= 0:
+        raise ValueError("llm.timeout_seconds must be a positive integer")
 
     evaluation_models = config["evaluation"]["embedding_models"]
     if not isinstance(evaluation_models, list) or not evaluation_models:
