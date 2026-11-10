@@ -1,0 +1,11 @@
+services:
+  qdrant:
+    image: qdrant/qdrant:v1.12.5
+    ports:
+      - "${QDRANT_HTTP_PORT:-6335}:6333"
+      - "${QDRANT_GRPC_PORT:-6336}:6334"
+    volumes:
+      - qdrant_docker_storage:/qdrant/storage
+
+volumes:
+  qdrant_docker_storage:

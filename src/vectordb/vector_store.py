@@ -1,4 +1,4 @@
-"""Lưu trữ Qdrant local persistent với kiểm tra tính tương thích collection."""
+"""Lưu trữ Qdrant persistent với kiểm tra tính tương thích collection."""
 from __future__ import annotations
 
 import hashlib
@@ -8,10 +8,11 @@ import uuid
 from pathlib import Path
 from typing import Any, Sequence
 
-from qdrant_client import QdrantClient, models
+from qdrant_client import models
 
 from src.chunking.chunker import Chunk
 from src.utils.helpers import get_logger
+from src.vectordb.connection import create_qdrant_client
 
 
 MANIFEST_NAME = ".rag_collection_metadata.json"
@@ -20,7 +21,7 @@ logger = get_logger("vectordb")
 
 
 class PersistentVectorStore:
-    """Quản lý một collection Qdrant local cho một model embedding."""
+    """Quản lý một collection Qdrant cho một model embedding."""
 
     def __init__(
         self,
@@ -28,23 +29,38 @@ class PersistentVectorStore:
         collection_name: str,
         model_name: str,
         vector_dimension: int,
+        backend: str = "local",
+        url: str | None = None,
+        api_key: str | None = None,
+        metadata_path: str | Path | None = None,
     ) -> None:
         if vector_dimension <= 0:
             raise ValueError("vector_dimension must be positive")
 
         self.storage_path = Path(storage_path)
+        self.metadata_path = Path(metadata_path or storage_path)
+        self.backend = backend
         self.collection_name = collection_name
         self.model_name = model_name
         self.vector_dimension = vector_dimension
         try:
-            self.storage_path.mkdir(parents=True, exist_ok=True)
-            self.client = QdrantClient(path=str(self.storage_path))
+            self.metadata_path.mkdir(parents=True, exist_ok=True)
+            self.client = create_qdrant_client(
+                backend,
+                storage_path,
+                url=url,
+                api_key=api_key,
+            )
             self._ensure_compatible_collection()
         except (OSError, RuntimeError, ValueError, sqlite3.Error) as error:
             logger.error("qdrant_initialization_failed error_type=%s", type(error).__name__)
             raise
 
-        logger.info("qdrant_initialized collection=%s", self.collection_name)
+        logger.info(
+            "qdrant_initialized backend=%s collection=%s",
+            self.backend,
+            self.collection_name,
+        )
 
     def index_chunks(
         self,
@@ -62,6 +78,7 @@ class PersistentVectorStore:
                 self._build_point_data(chunk, vector)
                 for chunk, vector in zip(chunks, vectors)
             ]
+            # So content hash để tránh upsert lại chunk không thay đổi.
             existing_hashes = self._get_existing_hashes(
                 [item["id"] for item in point_data]
             )
@@ -113,6 +130,7 @@ class PersistentVectorStore:
     def _ensure_compatible_collection(self) -> None:
         manifest = self._read_manifest()
         metadata = manifest.get(self.collection_name)
+        # Collection đã có phải giữ đúng model và dimension ban đầu.
         if self.client.collection_exists(self.collection_name):
             self._validate_existing_collection(metadata)
             return
@@ -195,7 +213,7 @@ class PersistentVectorStore:
         }
 
     def _manifest_path(self) -> Path:
-        return self.storage_path / MANIFEST_NAME
+        return self.metadata_path / MANIFEST_NAME
 
     def _read_manifest(self) -> dict[str, dict[str, Any]]:
         path = self._manifest_path()
@@ -248,6 +266,7 @@ def _build_metadata_filter(
 
 
 def _rank_unique_hits(points: Sequence[Any]) -> list[dict[str, Any]]:
+    # Tie-break theo metadata để thứ hạng không phụ thuộc thứ tự phản hồi server.
     ranked = sorted(
         points,
         key=lambda hit: (

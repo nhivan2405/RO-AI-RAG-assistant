@@ -21,8 +21,13 @@ DEFAULT_CONFIG: dict[str, dict[str, Any]] = {
         "gemini": "gemini-2.5-flash",
     },
     "vectordb": {
+        "backend": "local",
         "storage_path": "qdrant_storage",
         "collection_name": "rag_demo",
+        "url": "http://localhost:6333",
+        "metadata_path": "qdrant_docker_metadata",
+        "cloud_metadata_path": "qdrant_cloud_metadata",
+        "cloud_collection_name": "rag_cloud",
     },
     "logging": {"level": "INFO", "file": "logs/app.log"},
     "prompts": {"context_token_budget": 1200},
@@ -47,12 +52,14 @@ def load_config(config_path: str | Path = "config.yaml") -> dict[str, dict[str, 
     if not isinstance(loaded_config, dict):
         raise ValueError("Configuration must be a YAML mapping")
 
+    # Sao chép sâu để cấu hình từng lần đọc không làm đổi giá trị mặc định.
     config = deepcopy(DEFAULT_CONFIG)
     for section, values in loaded_config.items():
         if section not in config:
             raise ValueError(f"Unknown configuration section: {section}")
         if not isinstance(values, dict):
             raise ValueError(f"Configuration section '{section}' must be a mapping")
+        # Chặn lỗi gõ sai vì cấu hình là nguồn hành vi của pipeline.
         unknown_keys = values.keys() - config[section].keys()
         if unknown_keys:
             names = ", ".join(sorted(unknown_keys))
@@ -96,8 +103,18 @@ def _validate_config(config: dict[str, dict[str, Any]]) -> None:
         if not isinstance(config[section][key], str) or not config[section][key].strip():
             raise ValueError(f"{section}.{key} must be a non-empty string")
 
-    for key in ("storage_path", "collection_name"):
-        value = config["vectordb"][key]
+    vectordb = config["vectordb"]
+    if vectordb["backend"] not in {"local", "docker", "cloud"}:
+        raise ValueError("vectordb.backend must be 'local', 'docker', or 'cloud'")
+    for key in (
+        "storage_path",
+        "collection_name",
+        "url",
+        "metadata_path",
+        "cloud_metadata_path",
+        "cloud_collection_name",
+    ):
+        value = vectordb[key]
         if not isinstance(value, str) or not value.strip():
             raise ValueError(f"vectordb.{key} must be a non-empty string")
 
