@@ -1,40 +1,42 @@
 ﻿strategy,chunk_size_chars,chunk_overlap_chars,total_chunks,average_chunk_length_chars,maximum_chunk_length_chars,chunks_with_section,unavoidable_splits,empty_chunks,missing_source,first_chunk,second_chunk
-fixed,700,100,12,634.5,700,0,0,0,0,"QUY ĐỊNH THƯ VIỆN TRƯỜNG ĐẠI HỌC
-DỮ LIỆU GIẢ LẬP CHO DEMO RAG
+fixed,700,100,8,647.9,700,0,0,0,0,"# RÔ AI USER HANDBOOK V1
 
-Lưu ý quan trọng: Toàn bộ nội dung trong tài liệu này là dữ liệu nhân tạo phục vụ kiểm thử hệ thống hỏi đáp tài liệu. Đây không phải quy định thực tế của bất kỳ trường đại học, thư viện hoặc cơ quan nào. Không sử dụng tài liệu này để đưa ra quyết định học vụ, tài chính hoặc pháp lý.
+Tài liệu này hướng dẫn sử dụng Rô AI RAG Assistant bằng tiếng Việt. Rô AI hỗ trợ tra cứu tài liệu học tập có căn cứ: hệ thống truy xuất các đoạn liên quan trước khi tạo câu trả lời. Rô AI không phải chatbot trả lời theo kiến thức không kiểm soát.
 
-1. PHẠM VI VÀ ĐỐI TƯỢNG PHỤC VỤ
+Nếu evidence truy xuất không đủ, hệ thống trả về thông báo: ""Không tìm thấy đủ thông tin trong tài liệu được cung cấp."" Người dùng cần kiểm tra lại tài liệu gốc trước khi dùng thông tin cho học tập hoặc quyết định quan trọng.
 
-Thư viện phục vụ sinh viên, học viên, giảng viên và nhân viên có thẻ hợp lệ do trường giả lập cấp. Người dùng phải tự chịu trách nhiệm bảo quản thẻ thư viện và không cho người khác mượn thẻ để thực hiện giao dịch. Mỗi giao dịch mượn, trả, gia hạn hoặc đặt trước đều được ghi nhận theo mã bạn đọc.
+# 1. TÀI LIỆU ĐƯỢC HỖ TRỢ
 
-Bạn đọc cần giữ trật ","iao dịch mượn, trả, gia hạn hoặc đặt trước đều được ghi nhận theo mã bạn đọc.
+Rô AI hiện nạp được tệp TXT, PDF có văn bản trích xuất được và DOCX. PDF scan hoặc ảnh chưa được OCR, vì vậy nội dung không có text extractable không được xử lý như tài liệ"," scan hoặc ảnh chưa được OCR, vì vậy nội dung không có text extractable không được xử lý như tài liệu PDF thông thường.
 
-Bạn đọc cần giữ trật tự trong khu vực đọc, tuân thủ hướng dẫn của nhân viên thư viện và bảo quản tài liệu, thiết bị dùng chung. Thư viện có thể từ chối phục vụ tạm thời khi tài khoản có tài liệu quá hạn, tài liệu bị báo mất hoặc có khoản bồi hoàn chưa xử lý.
+Metadata nguồn chỉ được giữ khi tài liệu cung cấp. Hệ thống không tự tạo số trang, section, document ID hoặc citation không có trong dữ liệu nguồn.
 
-2. THỜI GIAN PHỤC VỤ
+# 2. CHUẨN BỊ VÀ CHẠY CLI
 
-Thư viện làm việc từ thứ Hai đến thứ Sáu, từ 08:00 đến 17:00. Thứ Bảy, thư viện mở từ 08:00 đến 12:00. Thư viện không mở cửa vào Chủ nhật.
+Môi trường phát triển dùng Conda `ro-ai-rag`. Người dùng đặt tài liệu được phép sử dụng trong thư mục `data/` và chạy retrieval không dùng LLM bằng lệnh `main.py --no-llm --question ""Câu hỏi""`.
 
-Trong ngày nghỉ lễ, thời gian phục vụ có thể thay đổi. Thông báo điều chỉnh giờ mở cửa được niêm yết tại quầy hỗ trợ và trên kênh thông báo nội bộ giả lập. Bạn đọc nên kiểm tra thông báo trước khi đế"
-recursive,700,100,12,556.2,693,0,0,0,0,"QUY ĐỊNH THƯ VIỆN TRƯỜNG ĐẠI HỌC
-DỮ LIỆU GIẢ LẬP CHO DEMO RAG
+Gemini chỉ được gọi khi người dùng chủ động thêm cờ `--gemini` và đã đặt biến môi trường `GEMINI_API_KEY`. Khi thiếu API key hoặc evidence hợp lệ, người dùng cần kiểm tra cấu hình thay vì mong đợi hệ thống tự"
+recursive,700,100,8,569.1,660,0,0,0,0,"# RÔ AI USER HANDBOOK V1
 
-Lưu ý quan trọng: Toàn bộ nội dung trong tài liệu này là dữ liệu nhân tạo phục vụ kiểm thử hệ thống hỏi đáp tài liệu. Đây không phải quy định thực tế của bất kỳ trường đại học, thư viện hoặc cơ quan nào. Không sử dụng tài liệu này để đưa ra quyết định học vụ, tài chính hoặc pháp lý.
+Tài liệu này hướng dẫn sử dụng Rô AI RAG Assistant bằng tiếng Việt. Rô AI hỗ trợ tra cứu tài liệu học tập có căn cứ: hệ thống truy xuất các đoạn liên quan trước khi tạo câu trả lời. Rô AI không phải chatbot trả lời theo kiến thức không kiểm soát.
 
-1. PHẠM VI VÀ ĐỐI TƯỢNG PHỤC VỤ
+Nếu evidence truy xuất không đủ, hệ thống trả về thông báo: ""Không tìm thấy đủ thông tin trong tài liệu được cung cấp."" Người dùng cần kiểm tra lại tài liệu gốc trước khi dùng thông tin cho học tập hoặc quyết định quan trọng.
 
-Thư viện phục vụ sinh viên, học viên, giảng viên và nhân viên có thẻ hợp lệ do trường giả lập cấp. Người dùng phải tự chịu trách nhiệm bảo quản thẻ thư viện và không cho người khác mượn thẻ để thực hiện giao dịch. Mỗi giao dịch mượn, trả, gia hạn hoặc đặt trước đều được ghi nhận theo mã bạn đọc.","Bạn đọc cần giữ trật tự trong khu vực đọc, tuân thủ hướng dẫn của nhân viên thư viện và bảo quản tài liệu, thiết bị dùng chung. Thư viện có thể từ chối phục vụ tạm thời khi tài khoản có tài liệu quá hạn, tài liệu bị báo mất hoặc có khoản bồi hoàn chưa xử lý.
+# 1. TÀI LIỆU ĐƯỢC HỖ TRỢ","# 1. TÀI LIỆU ĐƯỢC HỖ TRỢ
 
-2. THỜI GIAN PHỤC VỤ
+Rô AI hiện nạp được tệp TXT, PDF có văn bản trích xuất được và DOCX. PDF scan hoặc ảnh chưa được OCR, vì vậy nội dung không có text extractable không được xử lý như tài liệu PDF thông thường.
 
-Thư viện làm việc từ thứ Hai đến thứ Sáu, từ 08:00 đến 17:00. Thứ Bảy, thư viện mở từ 08:00 đến 12:00. Thư viện không mở cửa vào Chủ nhật.
+Metadata nguồn chỉ được giữ khi tài liệu cung cấp. Hệ thống không tự tạo số trang, section, document ID hoặc citation không có trong dữ liệu nguồn.
 
-Trong ngày nghỉ lễ, thời gian phục vụ có thể thay đổi. Thông báo điều chỉnh giờ mở cửa được niêm yết tại quầy hỗ trợ và trên kênh thông báo nội bộ giả lập. Bạn đọc nên kiểm tra thông báo trước khi đến thư viện, đặc biệt trong tuần thi hoặc kỳ nghỉ dài."
-structure_aware,700,100,15,444.9,589,15,0,0,0,"DỮ LIỆU GIẢ LẬP CHO DEMO RAG
+# 2. CHUẨN BỊ VÀ CHẠY CLI
 
-Lưu ý quan trọng: Toàn bộ nội dung trong tài liệu này là dữ liệu nhân tạo phục vụ kiểm thử hệ thống hỏi đáp tài liệu. Đây không phải quy định thực tế của bất kỳ trường đại học, thư viện hoặc cơ quan nào. Không sử dụng tài liệu này để đưa ra quyết định học vụ, tài chính hoặc pháp lý.","1. PHẠM VI VÀ ĐỐI TƯỢNG PHỤC VỤ
+Môi trường phát triển dùng Conda `ro-ai-rag`. Người dùng đặt tài liệu được phép sử dụng trong thư mục `data/` và chạy retrieval không dùng LLM bằng lệnh `main.py --no-llm --question ""Câu hỏi""`."
+structure_aware,700,100,10,450.7,666,10,0,0,0,"# RÔ AI USER HANDBOOK V1
 
-Thư viện phục vụ sinh viên, học viên, giảng viên và nhân viên có thẻ hợp lệ do trường giả lập cấp. Người dùng phải tự chịu trách nhiệm bảo quản thẻ thư viện và không cho người khác mượn thẻ để thực hiện giao dịch. Mỗi giao dịch mượn, trả, gia hạn hoặc đặt trước đều được ghi nhận theo mã bạn đọc.
+Tài liệu này hướng dẫn sử dụng Rô AI RAG Assistant bằng tiếng Việt. Rô AI hỗ trợ tra cứu tài liệu học tập có căn cứ: hệ thống truy xuất các đoạn liên quan trước khi tạo câu trả lời. Rô AI không phải chatbot trả lời theo kiến thức không kiểm soát.
 
-Bạn đọc cần giữ trật tự trong khu vực đọc, tuân thủ hướng dẫn của nhân viên thư viện và bảo quản tài liệu, thiết bị dùng chung. Thư viện có thể từ chối phục vụ tạm thời khi tài khoản có tài liệu quá hạn, tài liệu bị báo mất hoặc có khoản bồi hoàn chưa xử lý."
+Nếu evidence truy xuất không đủ, hệ thống trả về thông báo: ""Không tìm thấy đủ thông tin trong tài liệu được cung cấp."" Người dùng cần kiểm tra lại tài liệu gốc trước khi dùng thông tin cho học tập hoặc quyết định quan trọng.","# 1. TÀI LIỆU ĐƯỢC HỖ TRỢ
+
+Rô AI hiện nạp được tệp TXT, PDF có văn bản trích xuất được và DOCX. PDF scan hoặc ảnh chưa được OCR, vì vậy nội dung không có text extractable không được xử lý như tài liệu PDF thông thường.
+
+Metadata nguồn chỉ được giữ khi tài liệu cung cấp. Hệ thống không tự tạo số trang, section, document ID hoặc citation không có trong dữ liệu nguồn."
