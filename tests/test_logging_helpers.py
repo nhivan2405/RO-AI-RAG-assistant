@@ -45,6 +45,20 @@ class LoggingHelpersTest(unittest.TestCase):
         self.assertEqual(content.count("safe_event event_count=1"), 1)
         self.assertEqual(content.count("safe_event_after_repeat event_count=1"), 1)
 
+    def test_setup_logging_removes_leaked_non_file_handlers(self):
+        logger = logging.getLogger(APP_LOGGER_NAME)
+        logger.addHandler(logging.StreamHandler())
+
+        with tempfile.TemporaryDirectory() as directory:
+            log_path = Path(directory) / "app.log"
+            configured_logger = setup_logging(
+                {"logging": {"level": "INFO", "file": str(log_path)}}
+            )
+
+            self.assertEqual(len(configured_logger.handlers), 1)
+            self.assertIsInstance(configured_logger.handlers[0], logging.FileHandler)
+            self._close_log_handlers()
+
     def test_failure_logs_exclude_raw_question_and_api_key(self):
         with tempfile.TemporaryDirectory() as directory:
             log_path = Path(directory) / "app.log"

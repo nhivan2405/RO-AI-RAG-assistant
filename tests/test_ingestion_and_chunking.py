@@ -3,6 +3,8 @@ import unittest
 from pathlib import Path
 
 from docx import Document
+from pypdf import PdfWriter
+from pypdf.generic import DecodedStreamObject, DictionaryObject, NameObject
 
 from src.chunking.chunker import chunk_documents, make_chunks
 from src.ingestion.loader import load_documents
@@ -10,6 +12,30 @@ from src.ingestion.loader import load_documents
 
 # Bảo vệ metadata và các trường hợp cấu trúc học liệu dễ bị tách sai.
 class IngestionAndChunkingTest(unittest.TestCase):
+    @staticmethod
+    def _write_pdf_fixture(path: Path, page_texts: list[str]) -> None:
+        writer = PdfWriter()
+        font = DictionaryObject({
+            NameObject("/Type"): NameObject("/Font"),
+            NameObject("/Subtype"): NameObject("/Type1"),
+            NameObject("/BaseFont"): NameObject("/Helvetica"),
+        })
+        font_reference = writer._add_object(font)
+
+        for text in page_texts:
+            page = writer.add_blank_page(width=612, height=792)
+            page[NameObject("/Resources")] = DictionaryObject({
+                NameObject("/Font"): DictionaryObject({
+                    NameObject("/F1"): font_reference,
+                }),
+            })
+            stream = DecodedStreamObject()
+            stream.set_data(f"BT /F1 12 Tf 72 720 Td ({text}) Tj ET".encode("ascii"))
+            page[NameObject("/Contents")] = writer._add_object(stream)
+
+        with path.open("wb") as pdf_file:
+            writer.write(pdf_file)
+
     def test_loads_text_and_docx_with_source_metadata(self):
         with tempfile.TemporaryDirectory() as directory:
             folder = Path(directory)
@@ -25,6 +51,21 @@ class IngestionAndChunkingTest(unittest.TestCase):
             [
                 ("notes.docx", None, "Nội dung DOCX"),
                 ("notes.txt", None, "Nội dung TXT"),
+            ],
+        )
+
+    def test_loads_pdf_text_with_source_and_page_metadata(self):
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "handbook.pdf"
+            self._write_pdf_fixture(path, ["First PDF page", "Second PDF page"])
+
+            records = load_documents(directory)
+
+        self.assertEqual(
+            records,
+            [
+                ("handbook.pdf", 1, "First PDF page"),
+                ("handbook.pdf", 2, "Second PDF page"),
             ],
         )
 
